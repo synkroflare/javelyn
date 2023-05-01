@@ -6,6 +6,9 @@ import { HandleZapQrUpdateController } from "../../server/global/repositories/im
 export const handleZapContainer = () => {
   const client = new Client({
     authStrategy: new LocalAuth(),
+    puppeteer: {
+      args: ["--no-sandbox"],
+    },
   })
 
   client.initialize()
