@@ -36,6 +36,6 @@ app.use(express.urlencoded({ limit: "25mb", extended: true }))
 app.use(router)
 
 startContainers()
-app.listen(80, function () {
-  console.log("listening on port 4000")
+app.listen(8080, function () {
+  console.log("listening on port 8080")
 })
