@@ -4,6 +4,8 @@ export type TSendMessageData = {
   phoneNumbers: number[]
   clientsData: IClient[]
   message: string
+  companyId: number
+  userId: number
 }
 
 export type TGetQRCodeData = {

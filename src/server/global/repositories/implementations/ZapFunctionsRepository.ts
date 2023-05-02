@@ -29,7 +29,7 @@ export class ZapFunctionsRepository implements IZapRepository {
         if (data.phoneNumbers) {
           for (let i = 0; i < data.phoneNumbers.length; i++) {
             this.zapClient.sendMessage(
-              `${data.phoneNumbers[i]}@c.us`,
+              `55${data.phoneNumbers[i]}@c.us`,
               data.message
             )
             console.log(
@@ -59,14 +59,23 @@ export class ZapFunctionsRepository implements IZapRepository {
             data.clientsData[i].uuid
         )
 
-        this.zapClient.sendMessage(`${data.clientsData[i].phone}@c.us`, format1)
+        this.zapClient.sendMessage(
+          `55${data.clientsData[i].phone}@c.us`,
+          format1
+        )
         console.log("Sending message to: " + data.clientsData[i].phone)
-        this.prismaClient.throw.create({
-          companyId: data.companyId,
-          targetsIds: [data.clientsData[i].id],
-          creatorId: data.userId,
-          body: data.message,
-        })
+        try {
+          await this.prismaClient.throw.create({
+            data: {
+              companyId: data.companyId,
+              targetsIds: [data.clientsData[i].id],
+              creatorId: data.userId,
+              body: data.message,
+            },
+          })
+        } catch (e: any) {
+          console.log(e.message)
+        }
       }
 
       const clientIds = data.clientsData.map((client) => client.id)
