@@ -126,7 +126,7 @@ export class SpreadsheetFunctionsRepository implements ISpreadsheetRepository {
           },
         })
         if (!client) {
-          console.error("Could not find client for " + data[i].Nome)
+          /*  console.error("Could not find client for " + data[i].Nome) */
           continue
         }
 
@@ -150,7 +150,7 @@ export class SpreadsheetFunctionsRepository implements ISpreadsheetRepository {
           updateData.birthdayDay = getbday.getDate()
           updateData.birthdayMonth = getbday.getMonth() + 1
           updateData.birthdayYear = getbday.getFullYear()
-          for (let i2 = 0; i2 < 100; i2++) {
+          for (let i2 = 0; i2 < 30; i2++) {
             const bday = new Date(data[i].Aniversario)
             bday.setFullYear(2023 + i2)
 
@@ -164,9 +164,11 @@ export class SpreadsheetFunctionsRepository implements ISpreadsheetRepository {
               companyId: inputData.companyId,
               targets: { connect: { id: client.id } },
             }
-            const event = this.client.event.create({
+            const event = await this.client.event.create({
               data: newEvent,
             })
+
+            console.log("newevent", event.name)
 
             continue
           }
@@ -179,6 +181,7 @@ export class SpreadsheetFunctionsRepository implements ISpreadsheetRepository {
             },
             data: updateData,
           })
+          console.log("success for update " + client.name)
         } catch (e: any) {
           console.log(e.message)
           continue
