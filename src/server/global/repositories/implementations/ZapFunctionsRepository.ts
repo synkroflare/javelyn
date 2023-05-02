@@ -28,10 +28,10 @@ export class ZapFunctionsRepository implements IZapRepository {
       if (!data.clientsData || data.clientsData.length === 0) {
         if (data.phoneNumbers) {
           for (let i = 0; i < data.phoneNumbers.length; i++) {
-            /* this.zapClient.sendMessage(
+            this.zapClient.sendMessage(
               `${data.phoneNumbers[i]}@c.us`,
               data.message
-            ) */
+            )
             console.log(
               "Sending message with no cdata to: " + data.phoneNumbers[i]
             )
@@ -59,7 +59,7 @@ export class ZapFunctionsRepository implements IZapRepository {
             data.clientsData[i].uuid
         )
 
-        /* this.zapClient.sendMessage(`${data.clientsData[i].phone}@c.us`, format1) */
+        this.zapClient.sendMessage(`${data.clientsData[i].phone}@c.us`, format1)
         console.log("Sending message to: " + data.clientsData[i].phone)
         this.prismaClient.throw.create({
           companyId: data.companyId,

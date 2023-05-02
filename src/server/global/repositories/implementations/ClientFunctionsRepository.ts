@@ -29,7 +29,38 @@ export class ClientFunctionsRepository implements IClientRepository {
         id: data.id,
       },
       data,
+      include: {
+        events: true,
+      },
     })
+
+    if (client.birthday && client.events.length < 10) {
+      const eventPromises: any = []
+
+      for (let i2 = 0; i2 < 30; i2++) {
+        const bday = new Date(client.birthday)
+        bday.setFullYear(2023 + i2)
+
+        const newEventData = {
+          name: `Aniversário de ${client.name}`,
+          type: "BIRTHDAY",
+          date: bday,
+          dateDay: bday.getDate(),
+          dateMonth: bday.getMonth() + 1,
+          dateYear: bday.getFullYear(),
+          companyId: client.companyId,
+          targets: { connect: { id: client.id } },
+        }
+        const newEvent = this.client.event.create({
+          data: newEventData,
+        })
+
+        eventPromises.push(newEvent)
+
+        continue
+      }
+      Promise.all(eventPromises)
+    }
 
     return client
   }

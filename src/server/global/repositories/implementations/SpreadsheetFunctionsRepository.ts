@@ -150,11 +150,13 @@ export class SpreadsheetFunctionsRepository implements ISpreadsheetRepository {
           updateData.birthdayDay = getbday.getDate()
           updateData.birthdayMonth = getbday.getMonth() + 1
           updateData.birthdayYear = getbday.getFullYear()
+
+          const eventPromises: any = []
           for (let i2 = 0; i2 < 30; i2++) {
             const bday = new Date(data[i].Aniversario)
             bday.setFullYear(2023 + i2)
 
-            const newEvent = {
+            const newEventData = {
               name: `Aniversário de ${data[i].Nome}`,
               type: "BIRTHDAY",
               date: bday,
@@ -164,14 +166,15 @@ export class SpreadsheetFunctionsRepository implements ISpreadsheetRepository {
               companyId: inputData.companyId,
               targets: { connect: { id: client.id } },
             }
-            const event = await this.client.event.create({
-              data: newEvent,
+            const newEvent = this.client.event.create({
+              data: newEventData,
             })
 
-            console.log("newevent", event.name)
+            eventPromises.push(newEvent)
 
             continue
           }
+          Promise.all(eventPromises)
         }
 
         try {
