@@ -2,6 +2,8 @@ import express, { NextFunction, Request, Response } from "express"
 import "reflect-metadata"
 import { startContainers } from "./infra/container"
 import { router } from "./infra/routes"
+import fs from "fs"
+import https from "https"
 
 const app = express()
 // Add headers before the routes are defined
@@ -36,6 +38,21 @@ app.use(express.urlencoded({ limit: "25mb", extended: true }))
 app.use(router)
 
 startContainers()
-app.listen(8080, function () {
-  console.log("listening on port 8080")
-})
+
+const options = {
+  key: fs.readFileSync(
+    "../../../etc/letsencrypt/live/javelyn.link/privkey.pem"
+  ),
+  cert: fs.readFileSync(
+    "../../../etc/letsencrypt/live/javelyn.link/fullchain.pem"
+  ),
+}
+
+https
+  .createServer(options, app)
+  .listen(8080, () =>
+    console.log(
+      "Arauta v0.0.4 https server online on 3000 and using node version " +
+        process.version
+    )
+  )
