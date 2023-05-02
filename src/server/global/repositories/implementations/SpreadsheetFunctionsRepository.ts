@@ -139,11 +139,11 @@ export class SpreadsheetFunctionsRepository implements ISpreadsheetRepository {
 
         const updateData: any = {}
 
-        if (data[i].Telefone) updateData.phone = Number(data[i].Telefone)
-        if (data[i].Celular) updateData.phone = Number(data[i].Celular)
-        if (data[i].Whatsapp) updateData.phone = Number(data[i].Whatsapp)
-        if (data[i].Idade) updateData.age = Number(data[i].Idade)
-        if (data[i].Email) updateData.mail = data[i].Email
+        if (data[i].Telefone) updateData.phone = data[i].Telefone.toString()
+        if (data[i].Celular) updateData.phone = data[i].Celular.toString()
+        if (data[i].Whatsapp) updateData.phone = data[i].Whatsapp.toString()
+        if (data[i].Idade) updateData.age = data[i].Idade
+        if (data[i].Email) updateData.mail = data[i].Email.toString()
         if (data[i].Aniversario) {
           const getbday = new Date(data[i].Aniversario)
           updateData.birthday = getbday
