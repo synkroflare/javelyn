@@ -42,7 +42,7 @@ model Ticket {
   procedureNames String[]
   clientId Int?
   clientName String
-  clientCPF BigInt?
+  clientCPF String?
   companyId Int
   value Float?
   salesCode Int?

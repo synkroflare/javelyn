@@ -1,7 +1,8 @@
 export interface IClient {
   id: number
-  uuid: string
+  uuid: string | null
   name: string
+  cpf?: string | null
   phone?: string | null
   mail?: string | null
   rank: number
@@ -13,15 +14,15 @@ export interface IClient {
   absences: number | null
   daysSinceLastTicket: number
 
-  neighborhood?: string
-  adress?: string
-  zipCode?: number
-  houseNumber?: number
-  profession?: string
-  birthday?: Date
-  birthdayDay?: number
-  birthdayMonth?: number
-  birthdayYear?: number
+  neighborhood?: string | null
+  adress?: string | null
+  zipCode?: number | null
+  houseNumber?: number | null
+  profession?: string | null
+  birthday?: Date | null
+  birthdayDay?: number | null
+  birthdayMonth?: number | null
+  birthdayYear?: number | null
 
   statusTrashed: boolean | null
   statusActive: boolean | null

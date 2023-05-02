@@ -1,5 +1,5 @@
 import { PrismaClient } from "@prisma/client"
-import { IClient } from "server/global/models/IClient"
+import { IClient } from "../../../../../server/global/models/IClient"
 import { getDaysDifference } from "./getDaysDifference"
 
 export const verifyTicketReturnDates = async (

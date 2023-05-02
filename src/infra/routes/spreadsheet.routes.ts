@@ -10,4 +10,10 @@ spreadsheetRoutes.post(
   importSpreadsheetController.handle
 )
 
+spreadsheetRoutes.post(
+  "/hbd",
+  express.json({ limit: "25mb" }),
+  importSpreadsheetController.handleHbd
+)
+
 export { spreadsheetRoutes }

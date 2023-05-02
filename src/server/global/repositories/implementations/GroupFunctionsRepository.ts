@@ -1,5 +1,5 @@
 import { PrismaClient } from "@prisma/client"
-import { IClient } from "server/global/models/IClient"
+import { IClient } from "../../../../server/global/models/IClient"
 import { inject, injectable } from "tsyringe"
 import { IGroup } from "../../models/IGroup"
 import { IClientRepository } from "../IClientRepository"

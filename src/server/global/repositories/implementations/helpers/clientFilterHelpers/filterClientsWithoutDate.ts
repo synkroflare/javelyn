@@ -1,5 +1,5 @@
 import { PrismaClient } from "@prisma/client"
-import { IProcedure } from "server/global/models/IProcedure"
+import { IProcedure } from "../../../../../../server/global/models/IProcedure"
 import { IClient } from "../../../../models/IClient"
 
 export async function filterClientsWithoutDate(

@@ -114,7 +114,7 @@ export class SpreadsheetFunctionsRepository implements ISpreadsheetRepository {
     return { teta: "teta" }
   }
 
-  async importx(inputData: any): Promise<any> {
+  async importHbds(inputData: any): Promise<any> {
     try {
       const usedClients: string[] = []
       const data = inputData.data
@@ -167,11 +167,6 @@ export class SpreadsheetFunctionsRepository implements ISpreadsheetRepository {
             const event = this.client.event.create({
               data: newEvent,
             })
-
-            if (data[i].Nome === "ANA PAULA SANCHES CERQUEIRA") {
-              console.log(i2)
-              console.log("iterating for " + data[i].Nome + " in " + i2)
-            }
 
             continue
           }

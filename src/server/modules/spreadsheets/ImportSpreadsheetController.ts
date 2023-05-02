@@ -21,6 +21,20 @@ export class ImportSpreadsheetController {
       return response.status(400).send(error.message)
     }
   }
+
+  async handleHbd(request: Request, response: Response): Promise<Response> {
+    try {
+      const data = request.body
+      const importSpreadsheetUseCase = container.resolve(
+        ImportSpreadsheetUseCase
+      )
+      const importSpreadsheet = await importSpreadsheetUseCase.executeHbd(data)
+
+      return response.status(201).send(importSpreadsheet)
+    } catch (error: any) {
+      return response.status(400).send(error.message)
+    }
+  }
 }
 
 @injectable()
@@ -32,6 +46,11 @@ export class ImportSpreadsheetUseCase {
 
   async execute(data: TRequest): Promise<any | void> {
     const importSpreadsheet = await this.spreadsheetRepository.import(data)
+    return importSpreadsheet
+  }
+
+  async executeHbd(data: TRequest): Promise<any | void> {
+    const importSpreadsheet = await this.spreadsheetRepository.importHbds(data)
     return importSpreadsheet
   }
 }
