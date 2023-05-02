@@ -97,7 +97,7 @@ export class SpreadsheetFunctionsRepository implements ISpreadsheetRepository {
           ticket1.Valor.toString().replace("R$", "").trim()
         )
 
-        await this.client.client.update({
+        await this.client.client.updateMany({
           where: {
             name: ticket1.Cliente,
             companyId: ticket1.CompanyId,

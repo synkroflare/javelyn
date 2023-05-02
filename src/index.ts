@@ -52,7 +52,7 @@ https
   .createServer(options, app)
   .listen(8080, () =>
     console.log(
-      "Arauta v0.0.4 https server online on 3000 and using node version " +
+      "Javelyn v0.0.4 https server online on 8080 and using node version " +
         process.version
     )
   )
