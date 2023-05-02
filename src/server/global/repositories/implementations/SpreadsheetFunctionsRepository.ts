@@ -126,7 +126,7 @@ export class SpreadsheetFunctionsRepository implements ISpreadsheetRepository {
           },
         })
         if (!client) {
-          /*      console.error("Could not find client for " + data[i].Nome) */
+          console.error("Could not find client for " + data[i].Nome)
           continue
         }
 
@@ -180,7 +180,7 @@ export class SpreadsheetFunctionsRepository implements ISpreadsheetRepository {
             data: updateData,
           })
         } catch (e: any) {
-          console.log(updateData.phone)
+          console.log(e.message)
           continue
         }
       }
