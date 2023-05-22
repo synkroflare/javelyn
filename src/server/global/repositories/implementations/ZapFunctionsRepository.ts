@@ -1,6 +1,6 @@
 import { PrismaClient } from "@prisma/client"
 import { container, inject, injectable } from "tsyringe"
-import { Client, LocalAuth } from "whatsapp-web.js"
+import { Client, LocalAuth, NoAuth } from "whatsapp-web.js"
 import {
   IZapRepository,
   THandleConnectionData,
@@ -139,7 +139,7 @@ export class ZapFunctionsRepository implements IZapRepository {
 
     if (!check || clientCheck === "disconnected") {
       const client = new Client({
-        authStrategy: new LocalAuth({ clientId: "zapClient-" + user.id }),
+        authStrategy: new NoAuth(),
         puppeteer: {
           args: ["--no-sandbox"],
         },
