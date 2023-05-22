@@ -159,6 +159,7 @@ export class GroupFunctionsRepository implements IGroupRepository {
       where: formatedData,
       include: {
         clients: true,
+        creator: true,
       },
     })
     return groups

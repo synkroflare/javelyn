@@ -124,7 +124,7 @@ export class ClientFunctionsRepository implements IClientRepository {
       },
     })
 
-    this.client.company.update({
+    await this.client.company.update({
       where: {
         id: data.companyId,
       },

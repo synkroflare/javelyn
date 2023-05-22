@@ -66,6 +66,7 @@ export class ListFunctionsRepository implements IListRepository {
       include: {
         pendingClients: true,
         sentClients: true,
+        creator: true,
       },
     })
     return lists
