@@ -45,9 +45,9 @@ app.use(router)
 
 startContainers()
 
-const test = false
+const prod = true
 
-if (test) {
+if (prod) {
   const options = {
     key: fs.readFileSync(
       "../../../etc/letsencrypt/live/javelyn.link/privkey.pem"
@@ -64,11 +64,11 @@ if (test) {
           process.version
       )
     )
-}
-
-app.listen(8080, () =>
-  console.log(
-    "Javelyn v0.0.4 https server online on 8080 and using node version " +
-      process.version
+} else {
+  app.listen(8080, () =>
+    console.log(
+      "Javelyn v0.0.4 https server online on 8080 and using node version " +
+        process.version
+    )
   )
-)
+}
