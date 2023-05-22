@@ -18,6 +18,7 @@ model Company {
   phone2 String?
   plan String
   zapQrcode String @default("")
+  activeClientTreshold Int @default(100)
 
   statusTrashed Boolean @default(false)
 
@@ -62,7 +63,7 @@ model Ticket {
 
   procedures Procedure[]  
   proceduresAvailableToReturn Procedure[] @relation(name: "availableToReturn")
-  client Client @relation(fields: [clientName], references: [name])
+  client Client @relation(fields: [clientName, companyId], references: [name, companyId])
   creatorUser User? @relation(name:"creator",fields: [creatorUserId], references: [id])  
   assignedUser User? @relation(name:"assignee",fields: [assignedUserId], references: [id])
   company Company @relation(fields: [companyId], references: [id])
@@ -82,15 +83,17 @@ model Ticket {
 }
 
 model Client {
-  @@unique([id, name])
+  @@unique([companyId, name])
   id    Int     @id @default(autoincrement())
   uuid String? @default(uuid())
   companyId Int
-  name String @unique
+  responsibleUserId Int?
+  name String 
   CPF String? @unique
   phone String? @unique
   mail String?
   rank Int @default(50)
+  rankName String?
   
   age Int? 
   neighborhood String?
@@ -121,6 +124,7 @@ model Client {
   groups Group[] 
   sentLists List[]   @relation(name: "sent")
   pendingLists List[]   @relation(name: "pending")
+  responsibleUser User? @relation(fields: [responsibleUserId], references: [id])
   events Event[]
   targetedThrows Throw[]
   company Company @relation(fields: [companyId], references: [id])
@@ -138,9 +142,10 @@ model Client {
 }
 
 model Procedure {
+    @@unique([companyId, name])
     id    Int     @id @default(autoincrement())
     companyId Int
-    name String @unique
+    name String 
     value Float ?  
     type String?    @default("PADRÃO")
     recommendedReturnTime Int?
@@ -153,7 +158,7 @@ model Procedure {
     statusTrashed Boolean @default(false)
     createdAt DateTime @default(now())
     updatedAt DateTime @default(now())
-    }
+}
 
 model User {
     id    Int     @id @default(autoincrement())
@@ -162,6 +167,7 @@ model User {
     name String
     permission String
     companyId Int
+    zapQrcode String @default("")
 
     company Company @relation(fields: [companyId], references: [id])
 
@@ -170,6 +176,7 @@ model User {
     createdGroups Group[]
     createdLists List[]
     throws Throw[]
+    clients Client[]
 
     statusTrashed Boolean @default(false)
     createdAt DateTime @default(now())

@@ -22,7 +22,7 @@ export type TUpdateProcedureData = {
   name: string
   type: string
   value: number | any
-  recommendedReturnTime: string | number | null
+  recommendedReturnTime: number | null
 }
 
 export interface IProcedureRepository {

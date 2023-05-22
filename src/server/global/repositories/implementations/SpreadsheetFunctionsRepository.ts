@@ -70,7 +70,9 @@ export class SpreadsheetFunctionsRepository implements ISpreadsheetRepository {
                 },
               })
 
-          connectArray.push({ name: ticket1.Serviços[i] })
+          connectArray.push({
+            id: newProcedure.id,
+          })
         }
 
         const newTicket = await this.client.ticket.create({
@@ -111,7 +113,7 @@ export class SpreadsheetFunctionsRepository implements ISpreadsheetRepository {
       console.log(error.message)
       return error.message
     }
-    return { teta: "teta" }
+    return { status: "done" }
   }
 
   async importHbds(inputData: any): Promise<any> {

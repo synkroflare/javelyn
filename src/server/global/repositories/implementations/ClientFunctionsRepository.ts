@@ -105,6 +105,7 @@ export class ClientFunctionsRepository implements IClientRepository {
             procedures: true,
           },
         },
+        responsibleUser: true,
       },
     })
     return clients
@@ -123,6 +124,15 @@ export class ClientFunctionsRepository implements IClientRepository {
       },
     })
 
+    this.client.company.update({
+      where: {
+        id: data.companyId,
+      },
+      data: {
+        activeClientTreshold: data.treshold,
+      },
+    })
+
     const promiseArray: any = []
 
     for (const client of allClients) {
@@ -132,6 +142,7 @@ export class ClientFunctionsRepository implements IClientRepository {
       const updateData: any = {
         statusActive: activeData.isActive,
         daysSinceLastTicket: activeData.daysSinceLastTicket,
+        rankName: activeData.rankName,
       }
 
       if (activeData.isActive !== client.statusActive) {
@@ -150,7 +161,7 @@ export class ClientFunctionsRepository implements IClientRepository {
           resolve(
             await this.client.client.update({
               where: {
-                name: client.name,
+                id: client.id,
               },
               data: updateData,
             })
@@ -181,52 +192,57 @@ export class ClientFunctionsRepository implements IClientRepository {
       },
     })
 
-    for (const client of allClients) {
-      const updateData: any = {
-        procedureTypeInjetavelCount: 0,
-        procedureTypeCorporalCount: 0,
-        procedureTypeFacialCount: 0,
-        procedureTotalCount: 0,
-      }
-      for (const ticket of client.tickets) {
-        const types = ticket.procedures.map((a: any) => a.type)
-        updateData.procedureTotalCount += types.length
-        updateData.procedureTypeInjetavelCount += types.filter(
-          (a: any) => a === "INJETAVEL"
-        ).length
-        updateData.procedureTypeCorporalCount += types.filter(
-          (a: any) => a === "CORPORAL"
-        ).length
-        updateData.procedureTypeFacialCount += types.filter(
-          (a: any) => a === "FACIAL"
-        ).length
-      }
+    const promises: Promise<any>[] = []
+    allClients.forEach(async (client) => {
+      const promise = async () => {
+        const updateData: any = {
+          procedureTypeInjetavelCount: 0,
+          procedureTypeCorporalCount: 0,
+          procedureTypeFacialCount: 0,
+          procedureTotalCount: 0,
+        }
+        for (const ticket of client.tickets) {
+          const types = ticket.procedures.map((a: any) => a.type)
+          updateData.procedureTotalCount += types.length
+          updateData.procedureTypeInjetavelCount += types.filter(
+            (a: any) => a === "INJETAVEL"
+          ).length
+          updateData.procedureTypeCorporalCount += types.filter(
+            (a: any) => a === "CORPORAL"
+          ).length
+          updateData.procedureTypeFacialCount += types.filter(
+            (a: any) => a === "FACIAL"
+          ).length
+        }
 
-      if (
-        updateData.procedureTypeFacialCount >
-        0.5 * updateData.procedureTotalCount
-      ) {
-        updateData.procedureType = "FACIAL"
+        if (
+          updateData.procedureTypeFacialCount >
+          0.5 * updateData.procedureTotalCount
+        ) {
+          updateData.procedureType = "FACIAL"
+        }
+        if (
+          updateData.procedureTypeCorporalCount >
+          0.5 * updateData.procedureTotalCount
+        ) {
+          updateData.procedureType = "CORPORAL"
+        }
+        if (
+          updateData.procedureTypeInjetavelCount >
+          0.5 * updateData.procedureTotalCount
+        ) {
+          updateData.procedureType = "INJETAVEL"
+        }
+        const updateClient = await this.client.client.update({
+          where: {
+            id: client.id,
+          },
+          data: updateData,
+        })
       }
-      if (
-        updateData.procedureTypeCorporalCount >
-        0.5 * updateData.procedureTotalCount
-      ) {
-        updateData.procedureType = "CORPORAL"
-      }
-      if (
-        updateData.procedureTypeInjetavelCount >
-        0.5 * updateData.procedureTotalCount
-      ) {
-        updateData.procedureType = "INJETAVEL"
-      }
-      const updateClient = await this.client.client.update({
-        where: {
-          name: client.name,
-        },
-        data: updateData,
-      })
-    }
+      promises.push(promise())
+    })
+    await Promise.all(promises)
 
     const allTickets = await this.client.ticket.findMany({
       where: {
@@ -238,109 +254,68 @@ export class ClientFunctionsRepository implements IClientRepository {
       },
     })
 
-    for (const ticket of allTickets) {
-      const updateData: any = {
-        procedureTypeInjetavelCount: 0,
-        procedureTypeCorporalCount: 0,
-        procedureTypeFacialCount: 0,
-        procedureTotalCount: 0,
-      }
+    const ticketPromises: Promise<any>[] = []
+    allTickets.forEach((ticket) => {
+      const promise = async () => {
+        const updateData: any = {
+          procedureTypeInjetavelCount: 0,
+          procedureTypeCorporalCount: 0,
+          procedureTypeFacialCount: 0,
+          procedureTotalCount: 0,
+        }
 
-      const types = ticket.procedures.map((a: any) => a.type)
-      updateData.procedureTotalCount += types.length
-      updateData.procedureTypeInjetavelCount += types.filter(
-        (a: any) => a === "INJETAVEL"
-      ).length
-      updateData.procedureTypeCorporalCount += types.filter(
-        (a: any) => a === "CORPORAL"
-      ).length
-      updateData.procedureTypeFacialCount += types.filter(
-        (a: any) => a === "FACIAL"
-      ).length
+        const types = ticket.procedures.map((a: any) => a.type)
+        updateData.procedureTotalCount += types.length
+        updateData.procedureTypeInjetavelCount += types.filter(
+          (a: any) => a === "INJETAVEL"
+        ).length
+        updateData.procedureTypeCorporalCount += types.filter(
+          (a: any) => a === "CORPORAL"
+        ).length
+        updateData.procedureTypeFacialCount += types.filter(
+          (a: any) => a === "FACIAL"
+        ).length
 
-      if (
-        updateData.procedureTypeFacialCount >
-        0.5 * updateData.procedureTotalCount
-      ) {
-        updateData.procedureType = "FACIAL"
+        if (
+          updateData.procedureTypeFacialCount >
+          0.5 * updateData.procedureTotalCount
+        ) {
+          updateData.procedureType = "FACIAL"
+        }
+        if (
+          updateData.procedureTypeCorporalCount >
+          0.5 * updateData.procedureTotalCount
+        ) {
+          updateData.procedureType = "CORPORAL"
+        }
+        if (
+          updateData.procedureTypeInjetavelCount >
+          0.5 * updateData.procedureTotalCount
+        ) {
+          updateData.procedureType = "INJETAVEL"
+        }
+        const updateTicket = await this.client.ticket.update({
+          where: {
+            id: ticket.id,
+          },
+          data: updateData,
+        })
       }
-      if (
-        updateData.procedureTypeCorporalCount >
-        0.5 * updateData.procedureTotalCount
-      ) {
-        updateData.procedureType = "CORPORAL"
-      }
-      if (
-        updateData.procedureTypeInjetavelCount >
-        0.5 * updateData.procedureTotalCount
-      ) {
-        updateData.procedureType = "INJETAVEL"
-      }
-      const updateTicket = await this.client.ticket.update({
-        where: {
-          id: ticket.id,
-        },
-        data: updateData,
-      })
-    }
+      ticketPromises.push(promise())
+    })
+
+    await Promise.all(ticketPromises)
 
     return allClients
   }
 
   async findWithFilters(data: any): Promise<IClient[] | void> {
-    console.log(data)
-
-    const whereData = {
-      companyId: data.companyId,
-    }
-    const filters = data.filters
-    const numericFilters = ["totalSpent", "daysDiff", "procedureCount"]
-    const specialFilters = [""]
-    const dateAffectedFilters = [
-      "totalSpent",
-      "ticketCount",
-      "findByProcedure",
-      "javelynThrowCount",
-    ]
-
-    /*  if (
-      filters
-        .map((f) => f.type)
-        .filter((value: any) => dateAffectedFilters.includes(value)) &&
-      filters.filter((f) => ["daysDiff", "date"].includes(f.type)).length > 0
-    ) {
-      const clients = await filterClientsWithoutDate(data, this.client, true)
-      return await filterClientsWithDate({
-        inputData: data,
-        prismaClient: this.client,
-        preFilteredClients: clients,
-      })
-    } */
+    console.log({ data })
 
     return await filterClientsWithoutDate(data, this.client)
   }
 
   async findByName(data: TFindClientByNameData): Promise<IClient[] | void> {
-    console.log("hh")
-    const test = true
-    if (test) {
-      const clients = await this.client.client.findMany()
-
-      for (const client of clients) {
-        if (!client.uuid) {
-          const uuid = randomUUID()
-          await this.client.client.update({
-            where: {
-              id: client.id,
-            },
-            data: {
-              uuid: uuid,
-            },
-          })
-        }
-      }
-    }
-
     const clients = await this.client.client.findMany({
       where: {
         statusTrashed: false,

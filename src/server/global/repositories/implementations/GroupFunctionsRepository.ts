@@ -1,6 +1,6 @@
 import { PrismaClient } from "@prisma/client"
 import { IClient } from "../../../../server/global/models/IClient"
-import { inject, injectable } from "tsyringe"
+import { container, inject, injectable } from "tsyringe"
 import { IGroup } from "../../models/IGroup"
 import { IClientRepository } from "../IClientRepository"
 import {
@@ -10,6 +10,7 @@ import {
   TFindGroupData,
   TUpdateGroupData,
   TUpdateGroupParticipantsData,
+  TUpgradeAllGroupsData,
 } from "../IGroupRepository"
 
 @injectable()
@@ -179,5 +180,39 @@ export class GroupFunctionsRepository implements IGroupRepository {
     }
 
     return filteredGroups
+  }
+
+  async updateAllGroups({ companyId }: TUpgradeAllGroupsData): Promise<string> {
+    const groupRepository =
+      container.resolve<IGroupRepository>("GroupRepository")
+    const promiseArray: any = []
+    const company = await this.client.company.findFirst({
+      where: {
+        id: Number(companyId),
+      },
+      include: {
+        groups: {
+          where: {
+            statusTrashed: false,
+          },
+        },
+      },
+    })
+
+    if (!company) return "no company found"
+
+    const groups = company.groups
+    groups.forEach(async (group) => {
+      const updatedGroup = await groupRepository.updateParticipants({
+        companyId: Number(companyId),
+        filters: group.filters,
+        id: group.id,
+        mode: "AUTOMATIC",
+      })
+      promiseArray.push(updatedGroup)
+    })
+    Promise.all(promiseArray)
+
+    return "groups updated successfully"
   }
 }

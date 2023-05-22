@@ -5,6 +5,7 @@ import { IGroupRepository } from "../../server/global/repositories/IGroupReposit
 import { IListRepository } from "../../server/global/repositories/IListRepository"
 import { ClientFunctionsRepository } from "../../server/global/repositories/implementations/ClientFunctionsRepository"
 import { EventFunctionsRepository } from "../../server/global/repositories/implementations/EventFunctionsRepository"
+import { CompanyFunctionsRepository } from "../../server/global/repositories/implementations/CompanyFunctionsRepository"
 import { GroupFunctionsRepository } from "../../server/global/repositories/implementations/GroupFunctionsRepository"
 import { ListFunctionsRepository } from "../../server/global/repositories/implementations/ListFunctionsRepository"
 import { ProcedureFunctionsRepository } from "../../server/global/repositories/implementations/ProcedureFunctionsRepository"
@@ -17,6 +18,7 @@ import { ISpreadsheetRepository } from "../../server/global/repositories/ISpread
 import { ITicketRepository } from "../../server/global/repositories/ITicketRepository"
 import { IUserRepository } from "../../server/global/repositories/IUserRepository"
 import { IZapRepository } from "../../server/global/repositories/IZapRepository"
+import { ICompanyRepository } from "../../server/global/repositories/ICompanyRepository"
 
 export const handleRepositoriesContainers = () => {
   container.registerSingleton<ITicketRepository>(
@@ -62,5 +64,10 @@ export const handleRepositoriesContainers = () => {
   container.registerSingleton<IEventRepository>(
     "EventRepository",
     EventFunctionsRepository
+  )
+
+  container.registerSingleton<ICompanyRepository>(
+    "CompanyRepository",
+    CompanyFunctionsRepository
   )
 }

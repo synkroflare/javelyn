@@ -1,5 +1,6 @@
 import { Router } from "express"
 import { clientRoutes } from "./client.routes"
+import { companyRoutes } from "./company.route"
 import { eventRoutes } from "./event.routes"
 import { groupRoutes } from "./group.routes"
 import { listRoutes } from "./list.routes"
@@ -20,5 +21,6 @@ router.use("/zap/", zapRoutes)
 router.use("/group/", groupRoutes)
 router.use("/list/", listRoutes)
 router.use("/event/", eventRoutes)
+router.use("/company/", companyRoutes)
 
 export { router }

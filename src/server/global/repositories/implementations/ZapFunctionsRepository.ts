@@ -1,24 +1,23 @@
 import { PrismaClient } from "@prisma/client"
-import { inject, injectable } from "tsyringe"
-import { Client } from "whatsapp-web.js"
+import { container, inject, injectable } from "tsyringe"
+import { Client, LocalAuth } from "whatsapp-web.js"
 import {
   IZapRepository,
-  TGetQRCodeData,
+  THandleConnectionData,
   TSendMessageData,
 } from "../IZapRepository"
 
 @injectable()
 export class ZapFunctionsRepository implements IZapRepository {
   constructor(
-    @inject("ZapClient")
-    private readonly zapClient: Client,
     @inject("PrismaClient")
     private readonly prismaClient: PrismaClient
   ) {}
 
   async sendMessage(data: TSendMessageData): Promise<string> {
     try {
-      const status = await this.zapClient.getState()
+      const zapClient = container.resolve<Client>("zapClient-" + data.userId)
+      const status = await zapClient.getState()
       if (status === null) {
         return "No connection"
       }
@@ -28,13 +27,18 @@ export class ZapFunctionsRepository implements IZapRepository {
       if (!data.clientsData || data.clientsData.length === 0) {
         if (data.phoneNumbers) {
           for (let i = 0; i < data.phoneNumbers.length; i++) {
-            this.zapClient.sendMessage(
+            if (data.phoneNumbers[i].toString().length < 8) {
+              console.log("Invalid phone number: " + data.phoneNumbers[i])
+              continue
+            }
+            zapClient.sendMessage(
               `55${data.phoneNumbers[i]}@c.us`,
               data.message
             )
             console.log(
               "Sending message with no cdata to: " + data.phoneNumbers[i]
             )
+            await new Promise((resolve) => setTimeout(resolve, 1000)) ///// WAITS FOR 1 SECOND TO PREVENT WHATSAPP BUG FOR SENDING TOO MANY MSGS
           }
           return "Message sent successfully, without client data."
         }
@@ -42,7 +46,10 @@ export class ZapFunctionsRepository implements IZapRepository {
       }
 
       for (let i = 0; i < data.clientsData.length; i++) {
-        if (!data.clientsData[i].phone) {
+        if (
+          !data.clientsData[i].phone ||
+          typeof data.clientsData[i].phone !== "string"
+        ) {
           console.log(
             "No phone provided for client: " + data.clientsData[i].name
           )
@@ -59,10 +66,12 @@ export class ZapFunctionsRepository implements IZapRepository {
             data.clientsData[i].uuid
         )
 
-        this.zapClient.sendMessage(
-          `55${data.clientsData[i].phone}@c.us`,
-          format1
-        )
+        if (data.clientsData[i].phone!.length < 8) {
+          console.log("Invalid phone number: " + data.phoneNumbers[i])
+          continue
+        }
+
+        zapClient.sendMessage(`55${data.clientsData[i].phone}@c.us`, format1)
         console.log("Sending message to: " + data.clientsData[i].phone)
         try {
           await this.prismaClient.throw.create({
@@ -76,6 +85,7 @@ export class ZapFunctionsRepository implements IZapRepository {
         } catch (e: any) {
           console.log(e.message)
         }
+        await new Promise((resolve) => setTimeout(resolve, 1000)) ///// WAITS FOR 1 SECOND TO PREVENT WHATSAPP BUG FOR SENDING TOO MANY MSGS
       }
 
       const clientIds = data.clientsData.map((client) => client.id)
@@ -100,17 +110,95 @@ export class ZapFunctionsRepository implements IZapRepository {
     }
   }
 
-  async getQRCode(data: TGetQRCodeData): Promise<string> {
-    const company = await this.prismaClient.company.findFirst({
+  async handleConnection(
+    data: THandleConnectionData
+  ): Promise<{ isConnected: boolean; qrCode: string }> {
+    console.log({ data })
+    const user = await this.prismaClient.user.findFirst({
       where: {
-        id: data.companyId,
+        id: data.userId,
+        companyId: data.companyId,
       },
     })
 
-    if (!company || !company.zapQrcode) {
-      return "no qrcode found"
+    if (!user)
+      return {
+        isConnected: false,
+        qrCode: "",
+      }
+
+    const check = container.isRegistered<Client>("zapClient-" + user.id)
+
+    if (!check) {
+      const client = new Client({
+        authStrategy: new LocalAuth({ clientId: "zapClient-" + user.id }),
+        puppeteer: {
+          args: ["--no-sandbox"],
+        },
+      })
+      container.registerInstance<Client>("zapClient-" + user.id, client)
+      client.initialize()
+      client.on("loading_screen", (percent, message) => {
+        console.log("LOADING SCREEN", percent, message)
+      })
+
+      const qrCode: string = await new Promise((resolve, reject) => {
+        client.on("qr", async (qr) => {
+          console.log("zapClient-" + user.id + " qr on")
+          await this.prismaClient.user.update({
+            where: {
+              id: data.userId,
+            },
+            data: {
+              zapQrcode: qr,
+            },
+          })
+          resolve(qr)
+        })
+      })
+
+      client.on("qr", async (qr) => {
+        console.log("zapClient-" + user.id + " qr on")
+        await this.prismaClient.user.update({
+          where: {
+            id: data.userId,
+          },
+          data: {
+            zapQrcode: qr,
+          },
+        })
+      })
+
+      client.on("authenticated", () => {
+        console.log("zapClient-" + user.id + " AUTHENTICATED")
+      })
+      client.on("auth_failure", (msg) => {
+        // Fired if session restore was unsuccessful
+        console.error("zapClient-" + user.id + " AUTHENTICATION FAILURE", msg)
+      })
+      client.on("ready", () => {
+        console.log("zapClient-" + user.id + " READY")
+      })
+      container.registerInstance<Client>("zapClient-" + user.id, client)
+
+      await this.prismaClient.user.update({
+        where: {
+          id: data.userId,
+        },
+        data: {
+          zapQrcode: qrCode,
+        },
+      })
+
+      return {
+        isConnected: false,
+        qrCode: qrCode,
+      }
     }
 
-    return company?.zapQrcode
+    return {
+      isConnected: true,
+      qrCode: user.zapQrcode,
+    }
   }
 }

@@ -20,6 +20,12 @@ export class ProcedureFunctionsRepository implements IProcedureRepository {
       ...data,
     }
 
+    if (typeof formatedData.recommendedReturnTime === "string") {
+      formatedData.recommendedReturnTime = Number(
+        formatedData.recommendedReturnTime
+      )
+    }
+
     console.log(data)
 
     data.id ? (formatedData.id = Number(data.id)) : null

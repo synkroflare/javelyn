@@ -8,11 +8,14 @@ export type TSendMessageData = {
   userId: number
 }
 
-export type TGetQRCodeData = {
+export type THandleConnectionData = {
   companyId: number
+  userId: number
 }
 
 export interface IZapRepository {
   sendMessage(data: TSendMessageData): Promise<string>
-  getQRCode(data: TGetQRCodeData): Promise<string>
+  handleConnection(
+    data: THandleConnectionData
+  ): Promise<{ isConnected: boolean; qrCode: string }>
 }

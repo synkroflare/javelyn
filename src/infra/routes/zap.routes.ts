@@ -1,12 +1,12 @@
 import { Router } from "express"
-import { GetQRCodeController } from "../../server/modules/zap/GetQRCodeController"
+import { HandleConnectionController } from "../../server/modules/zap/HandleConnectionController"
 import { SendMessageController } from "../../server/modules/zap/SendMessageController"
 
 const sendMessageController = new SendMessageController()
-const getQRCodeController = new GetQRCodeController()
+const handleConnectionController = new HandleConnectionController()
 const zapRoutes = Router()
 
 zapRoutes.post("/", sendMessageController.handle)
-zapRoutes.propfind("/qrcode", getQRCodeController.handle)
+zapRoutes.propfind("/handle-connection", handleConnectionController.handle)
 
 export { zapRoutes }

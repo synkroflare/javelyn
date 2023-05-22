@@ -53,6 +53,10 @@ export type TUpdateGroupData = {
   trashedAt?: Date | null
 }
 
+export type TUpgradeAllGroupsData = {
+  companyId: number
+}
+
 export interface IGroupRepository {
   create(data: TCreateGroupData): Promise<IGroup | void>
   find(data: TFindGroupData): Promise<IGroup[] | void>
@@ -65,4 +69,5 @@ export interface IGroupRepository {
   } | void>
   updateMany(data: TUpdateGroupData): Promise<number | void>
   delete(data: TFindGroupData): Promise<IGroup | void>
+  updateAllGroups(data: TUpgradeAllGroupsData): Promise<string>
 }
