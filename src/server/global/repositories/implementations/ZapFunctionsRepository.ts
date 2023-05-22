@@ -145,7 +145,9 @@ export class ZapFunctionsRepository implements IZapRepository {
         },
       })
       container.registerInstance<Client>("zapClient-" + user.id, client)
+      console.log("already created and registered for user: " + user.id)
       client.initialize()
+      console.log("already initialized for user: " + user.id)
       client.on("loading_screen", (percent, message) => {
         console.log(
           "zapClient-" + user.id + " LOADING SCREEN",
