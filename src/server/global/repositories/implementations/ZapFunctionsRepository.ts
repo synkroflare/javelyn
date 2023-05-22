@@ -139,7 +139,7 @@ export class ZapFunctionsRepository implements IZapRepository {
 
     if (!check || clientCheck === "disconnected") {
       const client = new Client({
-        authStrategy: new NoAuth(),
+        authStrategy: new LocalAuth({ clientId: "zapClient-" + user.id }),
         puppeteer: {
           args: ["--no-sandbox"],
         },
@@ -154,7 +154,7 @@ export class ZapFunctionsRepository implements IZapRepository {
         )
       })
 
-      const qrCode: string = await new Promise((resolve, reject) => {
+      /* const qrCode: string = await new Promise((resolve, reject) => {
         client.on("qr", async (qr) => {
           console.log("zapClient-" + user.id + " qr on")
           await this.prismaClient.user.update({
@@ -167,7 +167,7 @@ export class ZapFunctionsRepository implements IZapRepository {
           })
           resolve(qr)
         })
-      })
+      }) */
 
       client.on("qr", async (qr) => {
         console.log("zapClient-" + user.id + " qr on")
@@ -200,18 +200,9 @@ export class ZapFunctionsRepository implements IZapRepository {
         )
       })
 
-      await this.prismaClient.user.update({
-        where: {
-          id: data.userId,
-        },
-        data: {
-          zapQrcode: qrCode,
-        },
-      })
-
       return {
         isConnected: false,
-        qrCode: qrCode,
+        qrCode: user.zapQrcode,
       }
     }
 
