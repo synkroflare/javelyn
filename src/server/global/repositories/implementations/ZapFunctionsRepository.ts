@@ -127,9 +127,17 @@ export class ZapFunctionsRepository implements IZapRepository {
         qrCode: "",
       }
 
-    const check = container.isRegistered<Client>("zapClient-" + user.id)
+    const check = container.isRegistered<Client | string>(
+      "zapClient-" + user.id
+    )
+    const clientCheck = check
+      ? container.resolve("zapClient-" + user.id)
+      : undefined
 
-    if (!check) {
+    console.log({ check })
+    console.log({ clientCheck })
+
+    if (!check || clientCheck === "disconnected") {
       const client = new Client({
         authStrategy: new LocalAuth({ clientId: "zapClient-" + user.id }),
         puppeteer: {
@@ -139,7 +147,11 @@ export class ZapFunctionsRepository implements IZapRepository {
       container.registerInstance<Client>("zapClient-" + user.id, client)
       client.initialize()
       client.on("loading_screen", (percent, message) => {
-        console.log("LOADING SCREEN", percent, message)
+        console.log(
+          "zapClient-" + user.id + " LOADING SCREEN",
+          percent,
+          message
+        )
       })
 
       const qrCode: string = await new Promise((resolve, reject) => {
@@ -179,7 +191,14 @@ export class ZapFunctionsRepository implements IZapRepository {
       client.on("ready", () => {
         console.log("zapClient-" + user.id + " READY")
       })
-      container.registerInstance<Client>("zapClient-" + user.id, client)
+
+      client.on("disconnected", () => {
+        console.log("zapClient-" + user.id + " disconnected.")
+        container.registerInstance<string>(
+          "zapClient-" + user.id,
+          "disconnected"
+        )
+      })
 
       await this.prismaClient.user.update({
         where: {
