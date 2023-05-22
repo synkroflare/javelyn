@@ -143,18 +143,20 @@ export class ZapFunctionsRepository implements IZapRepository {
         puppeteer: {
           args: ["--no-sandbox"],
         },
+        userAgent: "Mozilla/5.0",
       })
       container.registerInstance<Client>("zapClient-" + user.id, client)
       console.log("already created and registered for user: " + user.id)
       client.initialize()
       console.log("already initialized for user: " + user.id)
-      client.on("loading_screen", (percent, message) => {
+
+      /* client.on("loading_screen", (percent, message) => {
         console.log(
           "zapClient-" + user.id + " LOADING SCREEN",
           percent,
           message
         )
-      })
+      }) */
 
       /* const qrCode: string = await new Promise((resolve, reject) => {
         client.on("qr", async (qr) => {
