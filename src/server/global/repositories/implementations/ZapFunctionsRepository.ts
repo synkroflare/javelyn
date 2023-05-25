@@ -150,13 +150,13 @@ export class ZapFunctionsRepository implements IZapRepository {
       client.initialize()
       console.log("already initialized for user: " + user.id)
 
-      /* client.on("loading_screen", (percent, message) => {
+      client.on("loading_screen", (percent, message) => {
         console.log(
           "zapClient-" + user.id + " LOADING SCREEN",
           percent,
           message
         )
-      }) */
+      })
 
       /* const qrCode: string = await new Promise((resolve, reject) => {
         client.on("qr", async (qr) => {
