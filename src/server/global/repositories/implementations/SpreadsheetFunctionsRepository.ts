@@ -120,11 +120,13 @@ export class SpreadsheetFunctionsRepository implements ISpreadsheetRepository {
     try {
       const usedClients: string[] = []
       const data = inputData.data
+      const companyId = inputData.companyId
 
       for (let i = 0; i < data.length; i++) {
         const client = await this.client.client.findFirst({
           where: {
             name: data[i].Nome,
+            companyId: companyId,
           },
         })
         if (!client) {
@@ -182,7 +184,7 @@ export class SpreadsheetFunctionsRepository implements ISpreadsheetRepository {
         try {
           const updateClient = await this.client.client.update({
             where: {
-              name: client.name,
+              id: client.id,
             },
             data: updateData,
           })
