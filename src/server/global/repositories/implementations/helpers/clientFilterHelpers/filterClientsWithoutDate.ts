@@ -23,6 +23,10 @@ export async function filterClientsWithoutDate(
       enabled: false,
       value: null,
     },
+    procedureCount: {
+      enabled: false,
+      value: null,
+    },
 
     javelynThrowCount: {},
     totalSpent: {},
@@ -57,6 +61,14 @@ export async function filterClientsWithoutDate(
         specialFilters.ticketCount.enabled = true
         specialFilters.ticketCount.comparator = data[i].comparator
         specialFilters.ticketCount.value = Number(data[i].value)
+        usedFilterOperators[data[i].type] = true
+        continue
+      }
+
+      if (data[i].type === "procedureCount") {
+        specialFilters.procedureCount.enabled = true
+        specialFilters.procedureCount.comparator = data[i].comparator
+        specialFilters.procedureCount.value = Number(data[i].value)
         usedFilterOperators[data[i].type] = true
         continue
       }
@@ -316,11 +328,36 @@ export async function filterClientsWithoutDate(
     switch (specialFilters.ticketCount.comparator) {
       case "equals":
         clients = clients.filter(
+          (c) => c.tickets.length === specialFilters.ticketCount.value
+        )
+        break
+      case "not":
+        clients = clients.filter(
+          (c) => c.tickets.length !== specialFilters.ticketCount.value
+        )
+        break
+      case "gt":
+        clients = clients.filter(
+          (c) => c.tickets.length > specialFilters.ticketCount.value
+        )
+        break
+      case "lt":
+        clients = clients.filter(
+          (c) => c.tickets.length < specialFilters.ticketCount.value
+        )
+        break
+    }
+  }
+
+  if (specialFilters.procedureCount.enabled) {
+    switch (specialFilters.procedureCount.comparator) {
+      case "equals":
+        clients = clients.filter(
           (c) =>
             c.tickets
               .map((t) => t.procedures.length)
               .reduce((partialSum, a) => partialSum + a, 0) ==
-            specialFilters.ticketCount.value
+            specialFilters.procedureCount.value
         )
         break
       case "not":
@@ -329,7 +366,7 @@ export async function filterClientsWithoutDate(
             c.tickets
               .map((t) => t.procedures.length)
               .reduce((partialSum, a) => partialSum + a, 0) !=
-            specialFilters.ticketCount.value
+            specialFilters.procedureCount.value
         )
         break
       case "gt":
@@ -338,7 +375,7 @@ export async function filterClientsWithoutDate(
             c.tickets
               .map((t) => t.procedures.length)
               .reduce((partialSum, a) => partialSum + a, 0) >
-            specialFilters.ticketCount.value
+            specialFilters.procedureCount.value
         )
         break
       case "lt":
@@ -347,7 +384,7 @@ export async function filterClientsWithoutDate(
             c.tickets
               .map((t) => t.procedures.length)
               .reduce((partialSum, a) => partialSum + a, 0) <
-            specialFilters.ticketCount.value
+            specialFilters.procedureCount.value
         )
         break
     }
