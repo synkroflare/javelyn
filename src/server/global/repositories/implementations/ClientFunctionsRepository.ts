@@ -172,7 +172,7 @@ export class ClientFunctionsRepository implements IClientRepository {
 
     Promise.all(promiseArray)
 
-    return allClients
+    return
   }
 
   async updateClientProcedureType(
