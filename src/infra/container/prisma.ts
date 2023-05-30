@@ -5,7 +5,7 @@ export const handlePrismaContainer = async () => {
   const prisma = new PrismaClient()
   container.registerInstance<PrismaClient>("PrismaClient", prisma)
 
-  const users = await prisma.user.findMany({
+  /* const users = await prisma.user.findMany({
     where: {
       OR: [{ id: 24 }, { id: 16 }, { id: 14 }],
       AND: {
@@ -42,5 +42,5 @@ export const handlePrismaContainer = async () => {
   }
 
   await Promise.all(promiseArray)
-  console.log("done")
+  console.log("done") */
 }
