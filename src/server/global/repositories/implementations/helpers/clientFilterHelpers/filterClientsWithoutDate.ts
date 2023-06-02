@@ -4,8 +4,7 @@ import { IClient } from "../../../../models/IClient"
 
 export async function filterClientsWithoutDate(
   inputData: any,
-  prismaClient: PrismaClient,
-  preFiltering?: boolean
+  prismaClient: PrismaClient
 ): Promise<IClient[] | void> {
   const usedFilterOperators: any = {}
 
@@ -280,7 +279,11 @@ export async function filterClientsWithoutDate(
     delete filtersData.AND
   }
 
-  const formatedData = { ...filtersData, companyId: inputData.companyId }
+  const formatedData = {
+    ...filtersData,
+    companyId: inputData.companyId,
+    statusTrashed: false,
+  }
 
   const dateCheck = (i: number) => {
     if (!dateFilters.daysDiff[i] || !dateFilters.daysDiff[i].value) return null

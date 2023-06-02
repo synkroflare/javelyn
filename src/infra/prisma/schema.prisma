@@ -90,7 +90,7 @@ model Client {
   responsibleUserId Int?
   name String 
   CPF String? @unique
-  phone String? @unique
+  phone String? 
   mail String?
   rank Int @default(50)
   rankName String?
