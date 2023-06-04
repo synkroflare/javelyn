@@ -53,7 +53,7 @@ const getRankName = (lastTicket: Ticket, preLastTicket: Ticket) => {
 
   if (!preLastTicket) {
     if (daysSinceLastTicket < 60) return "NOVO CLIENTE"
-    if (daysSinceLastTicket < 150) return "A FIDELIZAR"
+    if (daysSinceLastTicket <= 150) return "A FIDELIZAR"
     if (daysSinceLastTicket > 150) return "RESGATE CLIENTE NOVO"
   }
 
