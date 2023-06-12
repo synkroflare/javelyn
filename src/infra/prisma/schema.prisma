@@ -11,69 +11,70 @@ datasource db {
 }
 
 model Company {
-  id    Int     @id @default(autoincrement())
-  name String
-  email String
-  phone1 String
-  phone2 String?
-  plan String
-  zapQrcode String @default("")
-  activeClientTreshold Int @default(100)
+  id                   Int     @id @default(autoincrement())
+  name                 String
+  email                String
+  phone1               String
+  phone2               String?
+  plan                 String
+  zapQrcode            String  @default("")
+  activeClientTreshold Int     @default(100)
 
   statusTrashed Boolean @default(false)
 
-  clients Client[]
-  users User[]
-  tickets Ticket[]
+  clients    Client[]
+  users      User[]
+  tickets    Ticket[]
   procedures Procedure[]
-  groups Group[]
-  lists List[]
-  events Event[]
+  groups     Group[]
+  lists      List[]
+  events     Event[]
+  tasks      Task[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now())
 }
 
 model Ticket {
-  id    Int     @id @default(autoincrement())
-  type String 
-  creatorUserId Int?
-  assignedUserId Int?
+  id              Int      @id @default(autoincrement())
+  type            String
+  creatorUserId   Int?
+  assignedUserId  Int?
   permitedUserIds Int[]
-  procedureNames String[]
-  clientId Int?
-  clientName String
-  clientCPF String?
-  companyId Int
-  value Float?
-  salesCode Int?
-  salesmanName String?
-  pa String?
-  salesChannel String?
+  procedureNames  String[]
+  clientId        Int?
+  clientName      String
+  clientCPF       String?
+  companyId       Int
+  value           Float?
+  salesCode       Int?
+  salesmanName    String?
+  pa              String?
+  salesChannel    String?
 
-  procedureTypeInjetavelCount Int @default(0)
-  procedureTypeCorporalCount Int @default(0)
-  procedureTypeFacialCount Int @default(0)
-  procedureTotalCount Int @default(0)
-  procedureType String @default("PADRÃO")
+  procedureTypeInjetavelCount Int    @default(0)
+  procedureTypeCorporalCount  Int    @default(0)
+  procedureTypeFacialCount    Int    @default(0)
+  procedureTotalCount         Int    @default(0)
+  procedureType               String @default("PADRÃO")
 
-  returnDate DateTime? 
-  assignedDate DateTime? 
+  returnDate    DateTime?
+  assignedDate  DateTime?
   postponedDate DateTime?
 
-  procedures Procedure[]  
+  procedures                  Procedure[]
   proceduresAvailableToReturn Procedure[] @relation(name: "availableToReturn")
-  client Client @relation(fields: [clientName, companyId], references: [name, companyId])
-  creatorUser User? @relation(name:"creator",fields: [creatorUserId], references: [id])  
-  assignedUser User? @relation(name:"assignee",fields: [assignedUserId], references: [id])
-  company Company @relation(fields: [companyId], references: [id])
-  
-  statusPostponed  Boolean @default(false)
-  statusAbsent Boolean @default(false)
-  statusDone Boolean @default(false)
-  statusCanceled Boolean @default(false)
-  statusTrashed Boolean @default(false)
-  statusAvailableToReturn Boolean @default(false)
+  client                      Client      @relation(fields: [clientName, companyId], references: [name, companyId])
+  creatorUser                 User?       @relation(name: "creator", fields: [creatorUserId], references: [id])
+  assignedUser                User?       @relation(name: "assignee", fields: [assignedUserId], references: [id])
+  company                     Company     @relation(fields: [companyId], references: [id])
+
+  statusPostponed            Boolean @default(false)
+  statusAbsent               Boolean @default(false)
+  statusDone                 Boolean @default(false)
+  statusCanceled             Boolean @default(false)
+  statusTrashed              Boolean @default(false)
+  statusAvailableToReturn    Boolean @default(false)
   statusReturnAlreadyManaged Boolean @default(false)
 
   doneDate DateTime?
@@ -83,187 +84,208 @@ model Ticket {
 }
 
 model Client {
-  @@unique([companyId, name])
-  id    Int     @id @default(autoincrement())
-  uuid String? @default(uuid())
-  companyId Int
+  id                Int     @id @default(autoincrement())
+  uuid              String? @default(uuid())
+  companyId         Int
   responsibleUserId Int?
-  name String 
-  CPF String? @unique
-  phone String? 
-  mail String?
-  rank Int @default(50)
-  rankName String?
-  
-  age Int? 
-  neighborhood String?
-  adress String?
-  zipCode Int?
-  houseNumber Int?
-  profession String?
-  birthday DateTime?
-  birthdayDay Int?  
-  birthdayMonth Int?  
-  birthdayYear Int?  
+  name              String
+  CPF               String? @unique
+  phone             String?
+  mail              String?
+  rank              Int     @default(50)
+  rankName          String?
 
-  totalSpent Float @default(0)
-  canceledTickets Int @default(0)
-  acomplishedTickets Int @default(0)
-  absences Int @default(0)
-  daysSinceLastTicket Int @default(0)
+  age           Int?
+  neighborhood  String?
+  adress        String?
+  zipCode       Int?
+  houseNumber   Int?
+  profession    String?
+  birthday      DateTime?
+  birthdayDay   Int?
+  birthdayMonth Int?
+  birthdayYear  Int?
+
+  totalSpent          Float @default(0)
+  canceledTickets     Int   @default(0)
+  acomplishedTickets  Int   @default(0)
+  absences            Int   @default(0)
+  daysSinceLastTicket Int   @default(0)
 
   javelynContactAttemptsDates DateTime[]
-  
-  procedureTypeInjetavelCount Int @default(0)
-  procedureTypeCorporalCount Int @default(0)
-  procedureTypeFacialCount Int @default(0)
-  procedureTotalCount Int @default(0)
-  procedureType String @default("PADRÃO")  
-  
-  tickets Ticket[]
-  groups Group[] 
-  sentLists List[]   @relation(name: "sent")
-  pendingLists List[]   @relation(name: "pending")
-  responsibleUser User? @relation(fields: [responsibleUserId], references: [id])
-  events Event[]
-  targetedThrows Throw[]
-  company Company @relation(fields: [companyId], references: [id])
 
-  statusTrashed Boolean @default(false)
-  statusActive Boolean @default(false) 
-  statusAvailableToReturn  Boolean @default(false) 
+  procedureTypeInjetavelCount Int    @default(0)
+  procedureTypeCorporalCount  Int    @default(0)
+  procedureTypeFacialCount    Int    @default(0)
+  procedureTotalCount         Int    @default(0)
+  procedureType               String @default("PADRÃO")
 
-  javelynEntryDates DateTime[] 
-  flexusEntryDates DateTime[] 
+  tickets         Ticket[]
+  groups          Group[]
+  sentLists       List[]   @relation(name: "sent")
+  pendingLists    List[]   @relation(name: "pending")
+  responsibleUser User?    @relation(fields: [responsibleUserId], references: [id])
+  events          Event[]
+  targetedThrows  Throw[]
+  targetedTasks   Task[]
+  company         Company  @relation(fields: [companyId], references: [id])
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @default(now())
+  statusTrashed           Boolean @default(false)
+  statusActive            Boolean @default(false)
+  statusAvailableToReturn Boolean @default(false)
+
+  javelynEntryDates DateTime[]
+  flexusEntryDates  DateTime[]
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @default(now())
   trashedAt DateTime?
+
+  @@unique([companyId, name])
 }
 
 model Procedure {
-    @@unique([companyId, name])
-    id    Int     @id @default(autoincrement())
-    companyId Int
-    name String 
-    value Float ?  
-    type String?    @default("PADRÃO")
-    recommendedReturnTime Int?
-    recommendedProcedureIds Int[]
+  id                      Int     @id @default(autoincrement())
+  companyId               Int
+  name                    String
+  value                   Float?
+  type                    String? @default("PADRÃO")
+  recommendedReturnTime   Int?
+  recommendedProcedureIds Int[]
 
-    ticket Ticket[]
-    ticketAvailableToReturn Ticket[] @relation(name: "availableToReturn")
-    company Company @relation(fields: [companyId], references: [id]) 
+  ticket                  Ticket[]
+  ticketAvailableToReturn Ticket[] @relation(name: "availableToReturn")
+  company                 Company  @relation(fields: [companyId], references: [id])
 
-    statusTrashed Boolean @default(false)
-    createdAt DateTime @default(now())
-    updatedAt DateTime @default(now())
+  statusTrashed Boolean  @default(false)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @default(now())
+
+  @@unique([companyId, name])
 }
 
 model User {
-    id    Int     @id @default(autoincrement())
-    username String @unique
-    password String
-    name String
-    permission String
-    companyId Int
-    zapQrcode String @default("")
+  id         Int    @id @default(autoincrement())
+  username   String @unique
+  password   String
+  name       String
+  permission String
+  companyId  Int
+  zapQrcode  String @default("")
 
-    company Company @relation(fields: [companyId], references: [id])
+  company Company @relation(fields: [companyId], references: [id])
 
-    createdTickets Ticket[] @relation("creator")
-    assignedTickets Ticket[] @relation("assignee")
-    createdGroups Group[]
-    createdLists List[]
-    throws Throw[]
-    clients Client[]
+  createdTickets  Ticket[] @relation("creator")
+  assignedTickets Ticket[] @relation("assignee")
+  createdGroups   Group[]
+  createdLists    List[]
+  throws          Throw[]
+  clients         Client[]
+  tasks           Task[]
 
-    statusTrashed Boolean @default(false)
-    createdAt DateTime @default(now())
-    updatedAt DateTime @default(now())
+  statusTrashed Boolean  @default(false)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @default(now())
 }
 
 model Group {
-  id Int @id @default(autoincrement())
-  companyId Int
-  creatorId Int
-  name String @default("")
-  description String @default("")
-  color String @default("linear-gradient(to right, MediumPurple, MediumSlateBlue)")
+  id              Int    @id @default(autoincrement())
+  companyId       Int
+  creatorId       Int
+  name            String @default("")
+  description     String @default("")
+  color           String @default("linear-gradient(to right, MediumPurple, MediumSlateBlue)")
   colorClassNames String @default("bg-gradient-to-r from-[MediumPurple] to-[MediumSlateBlue]")
-  filters Json
+  filters         Json
 
-  javelynThrows Int @default(0)
+  javelynThrows      Int        @default(0)
   javelynThrowsDates DateTime[]
 
   statusTrashed Boolean @default(false)
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @default(now())
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @default(now())
   trashedAt DateTime?
 
   clients Client[]
-  company Company @relation(fields: [companyId], references: [id])
-  creator User @relation(fields: [creatorId], references: [id])
+  company Company  @relation(fields: [companyId], references: [id])
+  creator User     @relation(fields: [creatorId], references: [id])
 }
 
 model List {
-  id Int @id @default(autoincrement())
-  companyId Int
-  creatorId Int
-  name String @default("")
-  description String @default("")
-  color String @default("linear-gradient(to right, MediumPurple, MediumSlateBlue)")
-    colorClassNames String @default("bg-gradient-to-r from-[MediumPurple] to-[MediumSlateBlue]")
-  filters Json
+  id              Int    @id @default(autoincrement())
+  companyId       Int
+  creatorId       Int
+  name            String @default("")
+  description     String @default("")
+  color           String @default("linear-gradient(to right, MediumPurple, MediumSlateBlue)")
+  colorClassNames String @default("bg-gradient-to-r from-[MediumPurple] to-[MediumSlateBlue]")
+  filters         Json
 
   javelynThrowsDates DateTime[]
 
   statusTrashed Boolean @default(false)
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @default(now())
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @default(now())
   trashedAt DateTime?
 
   pendingClients Client[] @relation(name: "pending")
-  sentClients Client[] @relation(name: "sent")
-  company Company @relation(fields: [companyId], references: [id])
-  creator User @relation(fields: [creatorId], references: [id])
+  sentClients    Client[] @relation(name: "sent")
+  company        Company  @relation(fields: [companyId], references: [id])
+  creator        User     @relation(fields: [creatorId], references: [id])
 }
 
 model Event {
-  id Int @id @default(autoincrement())
+  id        Int @id @default(autoincrement())
   companyId Int
 
-  name String?
-  type String 
-  date DateTime
-  dateDay Int  @default(0)
-  dateMonth Int  @default(0)
-  dateYear Int  @default(0)
+  name      String?
+  type      String
+  date      DateTime
+  dateDay   Int      @default(0)
+  dateMonth Int      @default(0)
+  dateYear  Int      @default(0)
 
   statusTrashed Boolean @default(false)
   statusHandled Boolean @default(false)
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @default(now())
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @default(now())
   handledAt DateTime?
   trashedAt DateTime?
 
   targets Client[]
-  company Company @relation(fields: [companyId], references: [id])
+  company Company  @relation(fields: [companyId], references: [id])
 }
 
 model Throw {
-  id Int @id @default(autoincrement())
-  companyId Int
+  id         Int    @id @default(autoincrement())
+  companyId  Int
   targetsIds Int[]
+  creatorId  Int
+  body       String
+  targets     Client[]
+  creatorUser User     @relation(fields: [creatorId], references: [id])
+
+  statusTrashed Boolean  @default(false)
+  createdAt     DateTime @default(now())
+}
+
+model Task {
+  id        Int    @id @default(autoincrement())
+  companyId Int
   creatorId Int
-  body String
+  title     String
+  body      String
 
-  targets Client[]
-  creatorUser User @relation(fields: [creatorId], references: [id])
+  targets     Client[]
+  creatorUser User     @relation(fields: [creatorId], references: [id])
+  company     Company   @relation(fields: [companyId], references: [id])
 
-  statusTrashed Boolean @default(false)
-  createdAt DateTime @default(now())
+  statusHandled Boolean  @default(false)
+  statusTrashed Boolean  @default(false)
+  createdAt     DateTime @default(now())
+  targetDate    DateTime
+  handledAtDate DateTime?
 }
