@@ -131,6 +131,7 @@ model Client {
   company         Company  @relation(fields: [companyId], references: [id])
 
   statusTrashed           Boolean @default(false)
+  trashedReason           String  @default("")
   statusActive            Boolean @default(false)
   statusAvailableToReturn Boolean @default(false)
 
