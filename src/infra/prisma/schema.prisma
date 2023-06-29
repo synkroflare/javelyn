@@ -128,6 +128,7 @@ model Client {
   events          Event[]
   targetedThrows  Throw[]
   targetedTasks   Task[]
+  assignedQuotes  Quote[]
   company         Company  @relation(fields: [companyId], references: [id])
 
   statusTrashed           Boolean @default(false)
@@ -156,6 +157,7 @@ model Procedure {
 
   ticket                  Ticket[]
   ticketAvailableToReturn Ticket[] @relation(name: "availableToReturn")
+  quotes                  Quote[]
   company                 Company  @relation(fields: [companyId], references: [id])
 
   statusTrashed Boolean  @default(false)
@@ -183,6 +185,7 @@ model User {
   throws          Throw[]
   clients         Client[]
   tasks           Task[]
+  createdQuotes   Quote[]
 
   statusTrashed Boolean  @default(false)
   createdAt     DateTime @default(now())
@@ -289,4 +292,27 @@ model Task {
   createdAt     DateTime @default(now())
   targetDate    DateTime
   handledAtDate DateTime?
+}
+
+model Quote {
+  id        Int    @id @default(autoincrement())
+  creatorId Int
+  clientId  Int
+
+  quoteRank Int
+  observation String?
+
+  
+  offeredProcedures Procedure[]
+  proceduresData    Json
+  creator           User   @relation(fields: [creatorId], references: [id])
+  client            Client @relation(fields: [clientId], references: [id])
+
+  targetDate    DateTime?
+  handledAtDate DateTime?
+  statusAbsent  Boolean  @default(false)
+  statusAccomplished Boolean  @default(false)
+  statusTrashed Boolean  @default(false)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @default(now())
 }
