@@ -88,6 +88,7 @@ model Lead {
   id                Int     @id @default(autoincrement())
   uuid              String? @default(uuid())
   companyId         Int
+  creatorId         Int
   name              String
   CPF               String? @unique
   phone             String
@@ -115,6 +116,7 @@ model Lead {
   targetedThrows  Throw[]
   targetedTasks   Task[]
   assignedQuotes  Quote[]
+  creator         User     @relation(fields: [creatorId], references: [id])
   company         Company  @relation(fields: [companyId], references: [id])
 
   statusTrashed           Boolean @default(false)
@@ -242,6 +244,7 @@ model User {
   clients         Client[]
   tasks           Task[]
   createdQuotes   Quote[]
+  createdLead     Lead[]
 
   statusTrashed Boolean  @default(false)
   createdAt     DateTime @default(now())
