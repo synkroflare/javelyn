@@ -23,6 +23,7 @@ model Company {
   statusTrashed Boolean @default(false)
 
   clients    Client[]
+  leads      Lead[]
   users      User[]
   tickets    Ticket[]
   procedures Procedure[]
@@ -83,6 +84,54 @@ model Ticket {
   updatedAt DateTime @default(now())
 }
 
+model Lead {
+  id                Int     @id @default(autoincrement())
+  uuid              String? @default(uuid())
+  companyId         Int
+  name              String
+  CPF               String? @unique
+  phone             String
+  mail              String?  
+
+  leadAdIdentifer   String?
+  leadStatus        String
+  leadEvaluationDate DateTime?
+  leadObservation    String?
+  leadType           String
+  leadRank           String  
+
+  age           Int?
+  neighborhood  String?
+  adress        String?
+  zipCode       Int?
+  houseNumber   Int?
+  profession    String?
+  birthday      DateTime?
+  birthdayDay   Int?
+  birthdayMonth Int?
+  birthdayYear  Int?
+  
+  events          Event[]
+  targetedThrows  Throw[]
+  targetedTasks   Task[]
+  assignedQuotes  Quote[]
+  company         Company  @relation(fields: [companyId], references: [id])
+
+  statusTrashed           Boolean @default(false)
+  trashedReason           String  @default("")
+  statusActive            Boolean @default(false)
+  statusAvailableToReturn Boolean @default(false)
+
+  javelynEntryDates DateTime[]
+  flexusEntryDates  DateTime[]
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @default(now())
+  trashedAt DateTime?
+
+  @@unique([companyId, name])
+}
+
 model Client {
   id                Int     @id @default(autoincrement())
   uuid              String? @default(uuid())
@@ -94,6 +143,12 @@ model Client {
   mail              String?
   rank              Int     @default(50)
   rankName          String?
+
+  leadAdIdentifer   String?
+  leadStatus        String?
+  leadEvaluationDate DateTime?
+  leadObservation    String?
+
 
   age           Int?
   neighborhood  String?
@@ -152,6 +207,7 @@ model Procedure {
   name                    String
   value                   Float?
   type                    String? @default("PADRÃO")
+  category                String  @default("PADRÃO")
   recommendedReturnTime   Int?
   recommendedProcedureIds Int[]
 
@@ -260,6 +316,7 @@ model Event {
   trashedAt DateTime?
 
   targets Client[]
+  leadTargets Lead[]
   company Company  @relation(fields: [companyId], references: [id])
 }
 
@@ -270,6 +327,7 @@ model Throw {
   creatorId  Int
   body       String
   targets     Client[]
+  leadTargets Lead[]
   creatorUser User     @relation(fields: [creatorId], references: [id])
 
   statusTrashed Boolean  @default(false)
@@ -284,6 +342,7 @@ model Task {
   body      String
 
   targets     Client[]
+  leadTargets Lead[]
   creatorUser User     @relation(fields: [creatorId], references: [id])
   company     Company   @relation(fields: [companyId], references: [id])
 
@@ -297,7 +356,10 @@ model Task {
 model Quote {
   id        Int    @id @default(autoincrement())
   creatorId Int
-  clientId  Int
+  clientId  Int?
+  leadId    Int?
+  isClientQuote Boolean @default(true)
+  isLeadQuote Boolean @default(false)
 
   quoteRank Int
   observation String?
@@ -306,7 +368,8 @@ model Quote {
   offeredProcedures Procedure[]
   proceduresData    Json
   creator           User   @relation(fields: [creatorId], references: [id])
-  client            Client @relation(fields: [clientId], references: [id])
+  client            Client? @relation(fields: [clientId], references: [id])
+  lead              Lead?   @relation(fields: [leadId], references: [id])
 
   targetDate    DateTime?
   handledAtDate DateTime?

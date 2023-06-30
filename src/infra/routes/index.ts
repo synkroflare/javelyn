@@ -3,6 +3,7 @@ import { clientRoutes } from "./client.routes"
 import { companyRoutes } from "./company.route"
 import { eventRoutes } from "./event.routes"
 import { groupRoutes } from "./group.routes"
+import { leadRoutes } from "./lead.routes"
 import { listRoutes } from "./list.routes"
 import { procedureRoutes } from "./procedure.routes"
 import { spreadsheetRoutes } from "./spreadsheet.routes"
@@ -24,5 +25,6 @@ router.use("/list/", listRoutes)
 router.use("/event/", eventRoutes)
 router.use("/company/", companyRoutes)
 router.use("/task/", taskRoutes)
+router.use("/lead/", leadRoutes)
 
 export { router }

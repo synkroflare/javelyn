@@ -1,3 +1,4 @@
+import { PrismaClient } from "@prisma/client"
 import { Request, Response } from "express"
 import { container, inject, injectable } from "tsyringe"
 import { IClient } from "../../global/models/IClient"
@@ -28,13 +29,13 @@ export class CreateClientController {
 @injectable()
 export class CreateClientUseCase {
   constructor(
-    @inject("ClientRepository")
-    private clientRepository: IClientRepository
+    @inject("PrismaClient")
+    private prismaClient: PrismaClient
   ) {}
 
-  async execute(data: TRequest): Promise<IClient | void> {
-    data.name = data.name.toUpperCase()
-    const createClient = await this.clientRepository.create(data)
+  async execute(data: any): Promise<IClient | void> {
+    data.data.name = data.data.name.toUpperCase()
+    const createClient = await this.prismaClient.client.create(data)
     return createClient
   }
 }
