@@ -1,19 +1,13 @@
+import { PrismaClient } from "@prisma/client"
 import { Request, Response } from "express"
 import { container, inject, injectable } from "tsyringe"
 import { IClient } from "../../global/models/IClient"
-import { IClientRepository } from "../../global/repositories/IClientRepository"
 
-type TRequest = {
-  id?: number
-  companyId: number
-  name: string
-}
-
-export class FindClientByNameController {
+export class FindClientController {
   async handle(request: Request, response: Response): Promise<Response> {
     try {
       const data = request.body
-      const findClientUseCase = container.resolve(FindClientByNameUseCase)
+      const findClientUseCase = container.resolve(FindClientUseCase)
       const findClient = await findClientUseCase.execute(data)
 
       const jsonClient = JSON.stringify(
@@ -29,14 +23,14 @@ export class FindClientByNameController {
 }
 
 @injectable()
-export class FindClientByNameUseCase {
+export class FindClientUseCase {
   constructor(
-    @inject("ClientRepository")
-    private clientRepository: IClientRepository
+    @inject("PrismaClient")
+    private prismaClient: PrismaClient
   ) {}
 
-  async execute(data: TRequest): Promise<IClient[] | void> {
-    const findClient = await this.clientRepository.findByName(data)
+  async execute(data: any): Promise<IClient[] | void> {
+    const findClient = await this.prismaClient.client.findMany(data)
     return findClient
   }
 }

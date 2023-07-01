@@ -2,7 +2,7 @@ import { Router } from "express"
 import { CreateClientController } from "../../server/modules/clients/CreateClientController"
 import { DeleteClientController } from "../../server/modules/clients/DeleteClientController"
 import { FilterClientController } from "../../server/modules/clients/FilterClientController"
-import { FindClientByNameController } from "../../server/modules/clients/FindClientByNameController"
+import { FindClientController } from "../../server/modules/clients/FindClientController"
 import { HandleClientActiveStatusController } from "../../server/modules/clients/HandleClientActiveStatusController"
 import { HomeCheckController } from "../../server/modules/clients/HomeCheckController"
 import { ReadClientController } from "../../server/modules/clients/ReadClientController"
@@ -11,7 +11,7 @@ import { UpdateClientProcedureTypeController } from "../../server/modules/client
 
 const readClientController = new ReadClientController()
 const filterClientController = new FilterClientController()
-const findClientController = new FindClientByNameController()
+const findClientController = new FindClientController()
 const createClientController = new CreateClientController()
 const updateClientController = new UpdateClientController()
 const deleteClientController = new DeleteClientController()

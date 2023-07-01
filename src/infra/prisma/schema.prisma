@@ -367,7 +367,6 @@ model Quote {
 
   quoteRank Int
   observation String?
-
   
   offeredProcedures Procedure[]
   proceduresData    Json
