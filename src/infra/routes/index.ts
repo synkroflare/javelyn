@@ -6,6 +6,7 @@ import { groupRoutes } from "./group.routes"
 import { leadRoutes } from "./lead.routes"
 import { listRoutes } from "./list.routes"
 import { procedureRoutes } from "./procedure.routes"
+import { quoteRoutes } from "./quote.routes"
 import { spreadsheetRoutes } from "./spreadsheet.routes"
 import { taskRoutes } from "./task.routes"
 import { ticketRoutes } from "./ticket.routes"
@@ -26,5 +27,6 @@ router.use("/event/", eventRoutes)
 router.use("/company/", companyRoutes)
 router.use("/task/", taskRoutes)
 router.use("/lead/", leadRoutes)
+router.use("/quote/", quoteRoutes)
 
 export { router }

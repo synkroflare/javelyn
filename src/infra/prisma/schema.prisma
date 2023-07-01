@@ -343,6 +343,7 @@ model Task {
   creatorId Int
   title     String
   body      String
+  category  String    @default("LEAD")
 
   targets     Client[]
   leadTargets Lead[]
