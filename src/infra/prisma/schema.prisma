@@ -31,6 +31,7 @@ model Company {
   lists      List[]
   events     Event[]
   tasks      Task[]
+  quotes     Quote[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now())
@@ -359,6 +360,7 @@ model Task {
 
 model Quote {
   id        Int    @id @default(autoincrement())
+  companyId Int
   creatorId Int
   clientId  Int?
   leadId    Int?
@@ -368,8 +370,9 @@ model Quote {
   quoteRank Int
   observation String?
   
-  offeredProcedures Procedure[]
+  procedures Procedure[]
   proceduresData    Json
+  company           Company  @relation(fields: [companyId],references: [id])
   creator           User   @relation(fields: [creatorId], references: [id])
   client            Client? @relation(fields: [clientId], references: [id])
   lead              Lead?   @relation(fields: [leadId], references: [id])
