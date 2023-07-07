@@ -94,6 +94,7 @@ model Lead {
   CPF               String? @unique
   phone             String
   mail              String?  
+  absences            Int   @default(0)
 
   leadAdIdentifer   String?
   leadStatus        String
@@ -105,7 +106,7 @@ model Lead {
   age           Int?
   neighborhood  String?
   adress        String?
-  zipCode       Int?
+  zipCode       String?
   houseNumber   Int?
   profession    String?
   birthday      DateTime?
@@ -156,7 +157,7 @@ model Client {
   age           Int?
   neighborhood  String?
   adress        String?
-  zipCode       Int?
+  zipCode       String?
   houseNumber   Int?
   profession    String?
   birthday      DateTime?
@@ -369,6 +370,7 @@ model Quote {
 
   quoteRank Int
   observation String?
+  value Int @default(0)
   
   procedures Procedure[]
   proceduresData    Json

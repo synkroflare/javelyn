@@ -1,0 +1,8 @@
+-- AlterTable
+ALTER TABLE "Client" ALTER COLUMN "zipCode" SET DATA TYPE TEXT;
+
+-- AlterTable
+ALTER TABLE "Lead" ADD COLUMN     "absences" INTEGER NOT NULL DEFAULT 0;
+
+-- AlterTable
+ALTER TABLE "Quote" ADD COLUMN     "value" INTEGER NOT NULL DEFAULT 0;
