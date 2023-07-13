@@ -1,23 +1,13 @@
 import { PrismaClient, Lead } from "@prisma/client"
 import { Request, Response } from "express"
 import { container, inject, injectable } from "tsyringe"
-import { toUSVString } from "util"
 
-type TCreateLeadData = {
-  data: {
-    body: string
-    companyId: number
-    targetDate: Date
-    title: string
-    creatorId: number
-    targets: {
-      connect: any
-    }
+export type JavelynResponse = {
+  meta: {
+    status: number
+    message: string
   }
-  include: {
-    targets?: any
-    creatorUser?: any
-  }
+  objects: any
 }
 
 export class CreateLeadController {
@@ -41,9 +31,31 @@ export class CreateLeadUseCase {
     private readonly client: PrismaClient
   ) {}
 
-  async execute(data: TCreateLeadData): Promise<Lead | void> {
-    const string = ""
-    const createLead = await this.client.lead.create(data)
-    return createLead
+  async execute(inputData: any): Promise<JavelynResponse | void> {
+    const { data } = inputData
+    if (data.name) {
+      const findLead = await this.client.lead.findFirst({
+        where: {
+          name: data.name,
+        },
+      })
+      if (findLead) {
+        return {
+          meta: {
+            status: 400,
+            message: `Já existe um lead cadastrado com este nome.`,
+          },
+          objects: null,
+        }
+      }
+    }
+    const createLead = await this.client.lead.create(inputData)
+    return {
+      meta: {
+        status: 200,
+        message: "O Lead foi criado com sucesso.",
+      },
+      objects: createLead,
+    }
   }
 }

@@ -1,6 +1,7 @@
 import { Router } from "express"
 import { clientRoutes } from "./client.routes"
 import { companyRoutes } from "./company.route"
+import { evaluationRoutes } from "./evaluation.routes"
 import { eventRoutes } from "./event.routes"
 import { groupRoutes } from "./group.routes"
 import { leadRoutes } from "./lead.routes"
@@ -28,5 +29,6 @@ router.use("/company/", companyRoutes)
 router.use("/task/", taskRoutes)
 router.use("/lead/", leadRoutes)
 router.use("/quote/", quoteRoutes)
+router.use("/evaluation/", evaluationRoutes)
 
 export { router }

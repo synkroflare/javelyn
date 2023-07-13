@@ -32,6 +32,7 @@ model Company {
   events     Event[]
   tasks      Task[]
   quotes     Quote[]
+  evaluations Evaluation[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now())
@@ -118,6 +119,7 @@ model Lead {
   targetedThrows  Throw[]
   targetedTasks   Task[]
   assignedQuotes  Quote[]
+  evaluations Evaluation[]
   creator         User     @relation(fields: [creatorId], references: [id])
   company         Company  @relation(fields: [companyId], references: [id])
 
@@ -188,6 +190,7 @@ model Client {
   targetedThrows  Throw[]
   targetedTasks   Task[]
   assignedQuotes  Quote[]
+    evaluations Evaluation[]
   company         Company  @relation(fields: [companyId], references: [id])
 
   statusTrashed           Boolean @default(false)
@@ -247,6 +250,7 @@ model User {
   tasks           Task[]
   createdQuotes   Quote[]
   createdLead     Lead[]
+  createdEvaluations Evaluation[]
 
   statusTrashed Boolean  @default(false)
   createdAt     DateTime @default(now())
@@ -387,3 +391,30 @@ model Quote {
   createdAt     DateTime @default(now())
   updatedAt     DateTime @default(now())
 }
+
+model Evaluation {
+  id        Int    @id @default(autoincrement())
+  companyId Int
+  creatorId Int
+  clientId  Int?
+  leadId    Int?
+  isClientEvaluation Boolean @default(true)
+  isLeadEvaluation Boolean @default(false)
+
+  evaluationPotential String
+  observation String?
+  
+  company           Company  @relation(fields: [companyId],references: [id])
+  creator           User   @relation(fields: [creatorId], references: [id])
+  client            Client? @relation(fields: [clientId], references: [id])
+  lead              Lead?   @relation(fields: [leadId], references: [id])
+
+  targetDate    DateTime?
+  handledAtDate DateTime?
+  statusAbsent  Boolean  @default(false)
+  statusAccomplished Boolean  @default(false)
+  statusTrashed Boolean  @default(false)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @default(now())
+}
+

@@ -45,7 +45,7 @@ app.use(router)
 
 startContainers()
 
-const prod = true
+const prod = false
 
 if (prod) {
   const options = {
