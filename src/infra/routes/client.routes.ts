@@ -1,4 +1,5 @@
 import { Router } from "express"
+import { UpsertClientController } from "../../server/modules/clients/UpsertClientController"
 import { CreateClientController } from "../../server/modules/clients/CreateClientController"
 import { DeleteClientController } from "../../server/modules/clients/DeleteClientController"
 import { FilterClientController } from "../../server/modules/clients/FilterClientController"
@@ -14,6 +15,7 @@ const filterClientController = new FilterClientController()
 const findClientController = new FindClientController()
 const createClientController = new CreateClientController()
 const updateClientController = new UpdateClientController()
+const upsertClientController = new UpsertClientController()
 const deleteClientController = new DeleteClientController()
 const handleActiveController = new HandleClientActiveStatusController()
 const updateClientTypeController = new UpdateClientProcedureTypeController()
@@ -29,6 +31,7 @@ clientRoutes.post("/", createClientController.handle)
 clientRoutes.patch("/", updateClientController.handle)
 clientRoutes.patch("/handle-active-status", handleActiveController.handle)
 clientRoutes.patch("/update-client-type", updateClientTypeController.handle)
+clientRoutes.patch("/upsert", upsertClientController.handle)
 clientRoutes.delete("/", deleteClientController.handle)
 
 export { clientRoutes }

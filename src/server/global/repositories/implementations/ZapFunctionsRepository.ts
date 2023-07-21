@@ -112,12 +112,19 @@ export class ZapFunctionsRepository implements IZapRepository {
 
   async handleConnection(
     data: THandleConnectionData
-  ): Promise<{ isConnected: boolean; qrCode: string }> {
+  ): Promise<{ isConnected: boolean; qrCode: string; message?: string }> {
     console.log({ data })
     const user = await this.prismaClient.user.findFirst({
       where: {
         id: data.userId,
         companyId: data.companyId,
+      },
+      include: {
+        company: {
+          include: {
+            users: true,
+          },
+        },
       },
     })
 
@@ -127,15 +134,19 @@ export class ZapFunctionsRepository implements IZapRepository {
         qrCode: "",
       }
 
+    if (user.company.whatsappFreeSlots === 0)
+      return {
+        isConnected: false,
+        qrCode: "",
+        message: `Todas as vagas de conexão ao whatsapp estão ocupadas nessa unidade.`,
+      }
+
     const check = container.isRegistered<Client | string>(
       "zapClient-" + user.id
     )
     const clientCheck = check
       ? container.resolve("zapClient-" + user.id)
       : undefined
-
-    console.log({ check })
-    console.log({ clientCheck })
 
     if (!check || clientCheck === "disconnected") {
       const client = new Client({
@@ -192,16 +203,33 @@ export class ZapFunctionsRepository implements IZapRepository {
         // Fired if session restore was unsuccessful
         console.error("zapClient-" + user.id + " AUTHENTICATION FAILURE", msg)
       })
-      client.on("ready", () => {
+      client.on("ready", async () => {
         console.log("zapClient-" + user.id + " READY")
+        await this.prismaClient.company.update({
+          where: {
+            id: user.company.id,
+          },
+          data: {
+            whatsappFreeSlots: {
+              decrement: 1,
+            },
+          },
+        })
       })
 
-      client.on("disconnected", () => {
+      client.on("disconnected", async () => {
         console.log("zapClient-" + user.id + " disconnected.")
-        container.registerInstance<string>(
-          "zapClient-" + user.id,
-          "disconnected"
-        )
+
+        await this.prismaClient.company.update({
+          where: {
+            id: user.company.id,
+          },
+          data: {
+            whatsappFreeSlots: {
+              increment: 1,
+            },
+          },
+        })
       })
 
       return {

@@ -1,6 +1,7 @@
 import { PrismaClient, Evaluation } from "@prisma/client"
 import { Request, Response } from "express"
 import { container, inject, injectable } from "tsyringe"
+import { JavelynResponse } from "../leads/CreateLeadController"
 
 type TReadEvaluationData = {
   where: {}
@@ -16,7 +17,13 @@ export class ReadEvaluationController {
 
       return response.status(201).json(readEvaluation)
     } catch (error: any) {
-      return response.status(400).send(error.message)
+      return response.status(400).send({
+        meta: {
+          status: 400,
+          message: error.message,
+        },
+        objects: null,
+      })
     }
   }
 }
@@ -28,8 +35,14 @@ export class ReadEvaluationUseCase {
     private readonly client: PrismaClient
   ) {}
 
-  async execute(data: TReadEvaluationData): Promise<Evaluation | null> {
+  async execute(data: TReadEvaluationData): Promise<JavelynResponse> {
     const readEvaluation = await this.client.evaluation.findFirst(data)
-    return readEvaluation
+    return {
+      meta: {
+        status: 200,
+        message: "Sucesso",
+      },
+      objects: [readEvaluation],
+    }
   }
 }

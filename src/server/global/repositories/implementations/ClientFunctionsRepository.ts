@@ -23,7 +23,6 @@ export class ClientFunctionsRepository implements IClientRepository {
   ) {}
 
   async update(data: TUpdateClientData): Promise<void | IClient> {
-    console.log(data)
     const client = await this.client.client.update({
       where: {
         id: data.id,
@@ -310,8 +309,6 @@ export class ClientFunctionsRepository implements IClientRepository {
   }
 
   async findWithFilters(data: any): Promise<IClient[] | void> {
-    console.log({ data })
-
     return await filterClientsWithoutDate(data, this.client)
   }
 

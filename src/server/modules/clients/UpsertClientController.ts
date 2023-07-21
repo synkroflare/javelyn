@@ -1,22 +1,21 @@
 import { PrismaClient } from "@prisma/client"
 import { Request, Response } from "express"
 import { container, inject, injectable } from "tsyringe"
-import { ITicket } from "../../global/models/ITicket"
-import { ITicketRepository } from "../../global/repositories/ITicketRepository"
+import {} from "../../global/repositories/IClientRepository"
 import { JavelynResponse } from "../leads/CreateLeadController"
 
-export class CreateTicketController {
+export class UpsertClientController {
   async handle(request: Request, response: Response): Promise<Response> {
     try {
       const data = request.body
-      const createTicketUseCase = container.resolve(CreateTicketUseCase)
-      const createTicket = await createTicketUseCase.execute(data)
+      const upsertClientUseCase = container.resolve(UpsertClientUseCase)
+      const upsertClient = await upsertClientUseCase.execute(data)
 
-      return response.status(201).json(createTicket)
+      return response.status(201).send(upsertClient)
     } catch (error: any) {
       return response.status(400).send({
         meta: {
-          status: 200,
+          status: 400,
           message: error.message,
         },
         objects: null,
@@ -26,20 +25,20 @@ export class CreateTicketController {
 }
 
 @injectable()
-export class CreateTicketUseCase {
+export class UpsertClientUseCase {
   constructor(
     @inject("PrismaClient")
     private client: PrismaClient
   ) {}
 
   async execute(data: any): Promise<JavelynResponse> {
-    const createTicket = await this.client.ticket.create(data)
+    const upsertClient = await this.client.client.upsert(data)
     return {
       meta: {
         status: 200,
-        message: "Ticket criado com sucesso!",
+        message: "Sucesso",
       },
-      objects: [createTicket],
+      objects: [upsertClient],
     }
   }
 }

@@ -18,6 +18,8 @@ model Company {
   phone2               String?
   plan                 String
   zapQrcode            String  @default("")
+  whatsappSlots        Int     @default(1)
+  whatsappFreeSlots    Int     @default(1)
   activeClientTreshold Int     @default(100)
 
   statusTrashed Boolean @default(false)
@@ -45,6 +47,7 @@ model Ticket {
   assignedUserId  Int?
   permitedUserIds Int[]
   procedureNames  String[]
+  proceduresData  Json?
   clientId        Int?
   clientName      String
   clientCPF       String?
@@ -126,7 +129,7 @@ model Lead {
   statusTrashed           Boolean @default(false)
   trashedReason           String  @default("")
   statusActive            Boolean @default(false)
-  statusAvailableToReturn Boolean @default(false)
+  statusConverted         Boolean @default(false)
 
   javelynEntryDates DateTime[]
   flexusEntryDates  DateTime[]
@@ -353,6 +356,7 @@ model Task {
 
   targets     Client[]
   leadTargets Lead[]
+  quotes      Quote[]
   creatorUser User     @relation(fields: [creatorId], references: [id])
   company     Company   @relation(fields: [companyId], references: [id])
 
@@ -372,11 +376,12 @@ model Quote {
   isClientQuote Boolean @default(true)
   isLeadQuote Boolean @default(false)
 
-  quoteRank Int
+  quoteRank String @default("MEDIO")
   observation String?
   value Int @default(0)
   
   procedures Procedure[]
+  tasks     Task[]
   proceduresData    Json
   company           Company  @relation(fields: [companyId],references: [id])
   creator           User   @relation(fields: [creatorId], references: [id])

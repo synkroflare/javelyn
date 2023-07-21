@@ -33,8 +33,6 @@ export const verifyClientActiveStatus = (clientInfo: any, treshold: number) => {
 
   const rankName = getRankName(sortedTickets[0], sortedTickets[1])
 
-  console.log(clientInfo.name + " Rank: " + rankName)
-
   return {
     isActive: activeData.isActive,
     daysSinceLastTicket: Math.min(...activeData.dayDiffs),

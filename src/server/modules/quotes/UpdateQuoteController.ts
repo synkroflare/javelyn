@@ -2,14 +2,6 @@ import { PrismaClient, Quote } from "@prisma/client"
 import { Request, Response } from "express"
 import { container, inject, injectable } from "tsyringe"
 
-type TRequest = {
-  where: {}
-  data: {}
-  include?: any
-  skip?: any
-  take?: any
-}
-
 export class UpdateQuoteController {
   async handle(request: Request, response: Response): Promise<Response> {
     try {
@@ -31,7 +23,7 @@ export class UpdateQuoteUseCase {
     private readonly client: PrismaClient
   ) {}
 
-  async execute(data: TRequest): Promise<Quote | void> {
+  async execute(data: any): Promise<Quote | void> {
     const updateQuote = await this.client.quote.update(data)
     return updateQuote
   }

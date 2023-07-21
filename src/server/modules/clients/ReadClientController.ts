@@ -1,7 +1,9 @@
+import { PrismaClient } from "@prisma/client"
 import { Request, Response } from "express"
 import { container, inject, injectable } from "tsyringe"
 import { IClient } from "../../global/models/IClient"
 import { IClientRepository } from "../../global/repositories/IClientRepository"
+import { JavelynResponse } from "../leads/CreateLeadController"
 
 type TRequest = {
   id?: number
@@ -22,7 +24,13 @@ export class ReadClientController {
 
       return response.status(201).send(jsonClient)
     } catch (error: any) {
-      return response.status(400).send(error.message)
+      return response.status(400).send({
+        meta: {
+          status: 400,
+          message: error.message,
+        },
+        objects: null,
+      })
     }
   }
 }
@@ -30,12 +38,18 @@ export class ReadClientController {
 @injectable()
 export class ReadClientUseCase {
   constructor(
-    @inject("ClientRepository")
-    private clientRepository: IClientRepository
+    @inject("PrismaClient")
+    private client: PrismaClient
   ) {}
 
-  async execute(data: TRequest): Promise<IClient[] | void> {
-    const readClient = await this.clientRepository.find(data)
-    return readClient
+  async execute(data: any): Promise<JavelynResponse> {
+    const readClient = await this.client.client.findFirst(data)
+    return {
+      meta: {
+        status: 200,
+        message: "Cliente encontrado.",
+      },
+      objects: [readClient],
+    }
   }
 }

@@ -1,6 +1,7 @@
 import { PrismaClient, Quote } from "@prisma/client"
 import { Request, Response } from "express"
 import { container, inject, injectable } from "tsyringe"
+import { JavelynResponse } from "../leads/CreateLeadController"
 
 type TCreateQuoteData = {
   data: any
@@ -16,7 +17,13 @@ export class CreateQuoteController {
 
       return response.status(201).json(createQuote)
     } catch (error: any) {
-      return response.status(400).send(error.message)
+      return response.status(400).send({
+        meta: {
+          message: error.message,
+          status: 200,
+        },
+        objects: null,
+      })
     }
   }
 }
@@ -28,8 +35,14 @@ export class CreateQuoteUseCase {
     private readonly client: PrismaClient
   ) {}
 
-  async execute(data: TCreateQuoteData): Promise<Quote | void> {
+  async execute(data: TCreateQuoteData): Promise<JavelynResponse> {
     const createQuote = await this.client.quote.create(data)
-    return createQuote
+    return {
+      meta: {
+        message: "Orçamento criado com sucesso",
+        status: 200,
+      },
+      objects: [createQuote],
+    }
   }
 }
