@@ -155,21 +155,18 @@ export class ClientFunctionsRepository implements IClientRepository {
           ]
         }
       }
+      console.log({ updateData })
       promiseArray.push(
-        new Promise(async (resolve, reject) => {
-          resolve(
-            await this.client.client.update({
-              where: {
-                id: client.id,
-              },
-              data: updateData,
-            })
-          )
+        this.client.client.update({
+          where: {
+            id: client.id,
+          },
+          data: updateData,
         })
       )
     }
 
-    Promise.all(promiseArray)
+    await Promise.all(promiseArray)
 
     return
   }
