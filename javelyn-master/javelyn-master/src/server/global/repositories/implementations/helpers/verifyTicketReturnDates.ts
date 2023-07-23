@@ -1,9 +1,8 @@
-import { PrismaClient } from "@prisma/client"
-import { IClient } from "server/global/models/IClient"
+import { Client, PrismaClient } from "@prisma/client"
 import { getDaysDifference } from "./getDaysDifference"
 
 export const verifyTicketReturnDates = async (
-  clientData: IClient,
+  clientData: Client,
   prismaClient: PrismaClient
 ): Promise<void> => {
   await prismaClient.client.update({

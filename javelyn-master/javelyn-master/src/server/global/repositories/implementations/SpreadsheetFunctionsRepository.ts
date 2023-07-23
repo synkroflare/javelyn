@@ -99,8 +99,10 @@ export class SpreadsheetFunctionsRepository implements ISpreadsheetRepository {
 
         await this.client.client.update({
           where: {
-            name: ticket1.Cliente,
-            companyId: ticket1.CompanyId,
+            companyId_name: {
+              companyId: ticket1.CompanyId,
+              name: ticket1.Cliente,
+            },
           },
           data: {
             totalSpent: findClient?.totalSpent + fixedTicketValor,
@@ -111,7 +113,7 @@ export class SpreadsheetFunctionsRepository implements ISpreadsheetRepository {
       console.log(error.message)
       return error.message
     }
-    return { teta: "teta" }
+    return { teta: "task done" }
   }
 
   async importx(inputData: any): Promise<any> {
@@ -168,11 +170,6 @@ export class SpreadsheetFunctionsRepository implements ISpreadsheetRepository {
               data: newEvent,
             })
 
-            if (data[i].Nome === "ANA PAULA SANCHES CERQUEIRA") {
-              console.log(i2)
-              console.log("iterating for " + data[i].Nome + " in " + i2)
-            }
-
             continue
           }
         }
@@ -180,7 +177,10 @@ export class SpreadsheetFunctionsRepository implements ISpreadsheetRepository {
         try {
           const updateClient = await this.client.client.update({
             where: {
-              name: client.name,
+              companyId_name: {
+                companyId: client.companyId,
+                name: client.name,
+              },
             },
             data: updateData,
           })

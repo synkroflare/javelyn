@@ -1,7 +1,6 @@
-import { PrismaClient } from "@prisma/client"
+import { Client, PrismaClient } from "@prisma/client"
 import { randomUUID } from "crypto"
 import { inject, injectable } from "tsyringe"
-import { IClient } from "../../models/IClient"
 import {
   IClientRepository,
   TCreateClientData,
@@ -22,8 +21,7 @@ export class ClientFunctionsRepository implements IClientRepository {
     private readonly client: PrismaClient
   ) {}
 
-  async update(data: TUpdateClientData): Promise<void | IClient> {
-    console.log(data)
+  async update(data: TUpdateClientData): Promise<void | Client> {
     const client = await this.client.client.update({
       where: {
         id: data.id,
@@ -44,7 +42,7 @@ export class ClientFunctionsRepository implements IClientRepository {
     return clients.count
   }
 
-  async delete(data: TFindClientData): Promise<void | IClient> {
+  async delete(data: TFindClientData): Promise<void | Client> {
     const client = await this.client.client.update({
       where: {
         id: data.id,
@@ -57,12 +55,12 @@ export class ClientFunctionsRepository implements IClientRepository {
     return client
   }
 
-  async create(data: TCreateClientData): Promise<IClient | void> {
+  async create(data: TCreateClientData): Promise<Client | void> {
     const client = await this.client.client.create({ data })
     return client
   }
 
-  async find(data: TFindClientData): Promise<IClient[] | void> {
+  async find(data: TFindClientData): Promise<Client[] | void> {
     if (data.id) {
       data.id = Number(data.id)
     }
@@ -81,7 +79,7 @@ export class ClientFunctionsRepository implements IClientRepository {
 
   async handleActiveStatus(
     data: THandleActiveStatusData
-  ): Promise<IClient[] | void> {
+  ): Promise<Client[] | void> {
     const allClients = await this.client.client.findMany({
       where: {
         companyId: data.companyId,
@@ -119,7 +117,10 @@ export class ClientFunctionsRepository implements IClientRepository {
           resolve(
             await this.client.client.update({
               where: {
-                name: client.name,
+                companyId_name: {
+                  companyId: client.companyId,
+                  name: client.name,
+                },
               },
               data: updateData,
             })
@@ -135,7 +136,7 @@ export class ClientFunctionsRepository implements IClientRepository {
 
   async updateClientProcedureType(
     data: TFindClientData
-  ): Promise<IClient[] | void> {
+  ): Promise<Client[] | void> {
     const allClients = await this.client.client.findMany({
       where: {
         companyId: data.companyId,
@@ -191,7 +192,10 @@ export class ClientFunctionsRepository implements IClientRepository {
       }
       const updateClient = await this.client.client.update({
         where: {
-          name: client.name,
+          companyId_name: {
+            companyId: client.companyId,
+            name: client.name,
+          },
         },
         data: updateData,
       })
@@ -256,67 +260,18 @@ export class ClientFunctionsRepository implements IClientRepository {
     return allClients
   }
 
-  async findWithFilters(data: any): Promise<IClient[] | void> {
-    console.log(data)
-
-    const whereData = {
-      companyId: data.companyId,
-    }
-    const filters = data.filters
-    const numericFilters = ["totalSpent", "daysDiff", "procedureCount"]
-    const specialFilters = [""]
-    const dateAffectedFilters = [
-      "totalSpent",
-      "ticketCount",
-      "findByProcedure",
-      "javelynThrowCount",
-    ]
-
-    /*  if (
-      filters
-        .map((f) => f.type)
-        .filter((value: any) => dateAffectedFilters.includes(value)) &&
-      filters.filter((f) => ["daysDiff", "date"].includes(f.type)).length > 0
-    ) {
-      const clients = await filterClientsWithoutDate(data, this.client, true)
-      return await filterClientsWithDate({
-        inputData: data,
-        prismaClient: this.client,
-        preFilteredClients: clients,
-      })
-    } */
-
+  async findWithFilters(data: any): Promise<Client[] | void> {
     return await filterClientsWithoutDate(data, this.client)
   }
 
-  async findByName(data: TFindClientByNameData): Promise<IClient[] | void> {
-    console.log("hh")
-    const test = true
-    if (test) {
-      const clients = await this.client.client.findMany()
-
-      for (const client of clients) {
-        if (!client.uuid) {
-          const uuid = randomUUID()
-          await this.client.client.update({
-            where: {
-              id: client.id,
-            },
-            data: {
-              uuid: uuid,
-            },
-          })
-        }
-      }
-    }
-
+  async findByName(data: TFindClientByNameData): Promise<Client[] | void> {
     const clients = await this.client.client.findMany({
       where: {
         statusTrashed: false,
       },
     })
 
-    const filteredClients: IClient[] = []
+    const filteredClients: Client[] = []
 
     for (let i = 0; i < clients.length; i++) {
       if (clients[i].name.includes(data.name)) {

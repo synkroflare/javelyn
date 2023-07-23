@@ -1,12 +1,10 @@
-import { PrismaClient } from "@prisma/client"
+import { Client, PrismaClient } from "@prisma/client"
 import { IProcedure } from "server/global/models/IProcedure"
-import { IClient } from "../../../../models/IClient"
 
 export async function filterClientsWithoutDate(
   inputData: any,
-  prismaClient: PrismaClient,
-  preFiltering?: boolean
-): Promise<IClient[] | void> {
+  prismaClient: PrismaClient
+): Promise<Client[] | void> {
   const usedFilterOperators: any = {}
 
   const data = inputData.filters
@@ -72,7 +70,6 @@ export async function filterClientsWithoutDate(
       if (data[i].type === "findByProcedureReturn") {
         switch (usedFilterOperators[data[i].type]) {
           case true:
-            console.log("h")
             filtersData.OR.push({
               tickets: {
                 some: {

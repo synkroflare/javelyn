@@ -3,7 +3,6 @@ import { container, inject, injectable } from "tsyringe"
 
 export class HandleZapQrUpdateController {
   async handle(companyId: number, qrcode: string) {
-    console.log("here")
     const handleZapQrUpdateUseCase = container.resolve(HandleZapQrUpdateUseCase)
     const updateQr = await handleZapQrUpdateUseCase.execute(companyId, qrcode)
   }
@@ -17,7 +16,6 @@ export class HandleZapQrUpdateUseCase {
   ) {}
 
   async execute(companyId: number, qrcode: string): Promise<string> {
-    console.log("executing")
     if (!qrcode) {
       console.error("no qr provided")
       return "Error: no qr provided."
