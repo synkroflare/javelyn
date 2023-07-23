@@ -7,7 +7,14 @@ type TActiveData = {
   dayDiffs: number[]
 }
 
-export const verifyClientActiveStatus = (clientInfo: any, treshold: number) => {
+export const verifyClientActiveStatus = (
+  clientInfo: any,
+  treshold: number
+): {
+  isActive: boolean
+  daysSinceLastTicket: number
+  rankName: string
+} => {
   const tickets = clientInfo.tickets
   const todayDate = new Date()
 
@@ -35,7 +42,7 @@ export const verifyClientActiveStatus = (clientInfo: any, treshold: number) => {
 
   return {
     isActive: activeData.isActive,
-    daysSinceLastTicket: Math.min(...activeData.dayDiffs),
+    daysSinceLastTicket: Math.min(...activeData.dayDiffs) ?? 99999,
     rankName,
   }
 }

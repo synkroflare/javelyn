@@ -43,6 +43,10 @@ app.use(express.urlencoded({ limit: "25mb", extended: true }))
 
 app.use(router)
 
+app.on("uncaughtException", (e) => {
+  console.log(e)
+})
+
 startContainers()
 
 const prod = true

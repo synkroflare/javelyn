@@ -1,4 +1,3 @@
-import { PrismaClient, User } from "@prisma/client"
 import { Request, Response } from "express"
 import { container, inject, injectable } from "tsyringe"
 import { IUser } from "../../global/models/IUser"
@@ -9,14 +8,14 @@ type TRequest = {
   companyId: number
 }
 
-export class ReadUserController {
+export class FindUserController {
   async handle(request: Request, response: Response): Promise<Response> {
     try {
       const data = request.body
-      const readUserUseCase = container.resolve(ReadUserUseCase)
-      const readUser = await readUserUseCase.execute(data)
+      const findUserUseCase = container.resolve(FindUserUseCase)
+      const findUser = await findUserUseCase.execute(data)
 
-      return response.status(201).json(readUser)
+      return response.status(201).json(findUser)
     } catch (error: any) {
       return response.status(400).send(error.message)
     }
@@ -24,14 +23,14 @@ export class ReadUserController {
 }
 
 @injectable()
-export class ReadUserUseCase {
+export class FindUserUseCase {
   constructor(
-    @inject("PrismaClient")
-    private client: PrismaClient
+    @inject("UserRepository")
+    private userRepository: IUserRepository
   ) {}
 
-  async execute(data: any): Promise<User | null> {
-    const readUser = await this.client.user.findFirst(data)
-    return readUser
+  async execute(data: TRequest): Promise<IUser[] | void> {
+    const findUser = await this.userRepository.find(data)
+    return findUser
   }
 }

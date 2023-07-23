@@ -1,4 +1,4 @@
-import { PrismaClient } from "@prisma/client"
+import { Client, PrismaClient } from "@prisma/client"
 import { randomUUID } from "crypto"
 import { inject, injectable } from "tsyringe"
 import { IClient } from "../../models/IClient"
@@ -112,7 +112,7 @@ export class ClientFunctionsRepository implements IClientRepository {
 
   async handleActiveStatus(
     data: THandleActiveStatusData
-  ): Promise<IClient[] | void> {
+  ): Promise<Client[] | void> {
     const allClients = await this.client.client.findMany({
       where: {
         companyId: data.companyId,

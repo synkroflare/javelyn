@@ -1,3 +1,4 @@
+import { Client } from "@prisma/client"
 import { IClient } from "../models/IClient"
 
 export type TCreateClientData = {
@@ -50,6 +51,6 @@ export interface IClientRepository {
   update(data: TUpdateClientData): Promise<IClient | void>
   updateMany(data: TUpdateClientData): Promise<number | void>
   delete(data: TFindClientData): Promise<IClient | void>
-  handleActiveStatus(data: THandleActiveStatusData): Promise<IClient[] | void>
+  handleActiveStatus(data: THandleActiveStatusData): Promise<Client[] | void>
   updateClientProcedureType(data: TFindClientData): Promise<IClient[] | void>
 }
