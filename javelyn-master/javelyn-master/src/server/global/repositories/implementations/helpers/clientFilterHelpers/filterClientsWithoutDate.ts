@@ -390,11 +390,11 @@ export async function filterClientsWithoutDate(
   }
 
   if (specialFilters.procedureType?.enabled) {
+    console.log("find by prctype enabled")
+    console.log({ specialFilters })
     if (specialFilters.procedureType?.comparator === "equals") {
       clients = clients.filter((client) => {
-        const ticketProcedures = client.tickets.map((t) => {
-          return t.procedures
-        })
+        const ticketProcedures = client.tickets.map((t) => t.procedures)
 
         const procedureTypes = ([] as Procedure[])
           .concat(...ticketProcedures)
