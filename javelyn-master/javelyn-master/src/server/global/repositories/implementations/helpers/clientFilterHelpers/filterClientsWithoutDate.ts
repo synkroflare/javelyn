@@ -390,7 +390,7 @@ export async function filterClientsWithoutDate(
   }
 
   if (specialFilters.procedureType?.enabled) {
-    if (specialFilters.findByProcedure?.comparator === "equals") {
+    if (specialFilters.procedureType?.comparator === "equals") {
       clients = clients.filter((client) => {
         const ticketProcedures = client.tickets.map((t) => {
           return t.procedures
@@ -400,11 +400,11 @@ export async function filterClientsWithoutDate(
           .concat(...ticketProcedures)
           .map((p) => p.type)
 
-        if (procedureTypes.includes(specialFilters.findByProcedure.stringValue))
+        if (procedureTypes.includes(specialFilters.procedureType.stringValue))
           return client
       })
     }
-    if (specialFilters.findByProcedure?.comparator === "not") {
+    if (specialFilters.procedureType?.comparator === "not") {
       clients = clients.filter((client) => {
         const ticketProcedures = client.tickets.map((t) => {
           return t.procedures
@@ -414,9 +414,7 @@ export async function filterClientsWithoutDate(
           .concat(...ticketProcedures)
           .map((p) => p.type)
 
-        if (
-          !procedureTypes.includes(specialFilters.findByProcedure.stringValue)
-        )
+        if (!procedureTypes.includes(specialFilters.procedureType.stringValue))
           return client
       })
     }
