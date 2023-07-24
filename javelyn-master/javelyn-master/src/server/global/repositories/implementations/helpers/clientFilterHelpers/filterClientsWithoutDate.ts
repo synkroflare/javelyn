@@ -24,6 +24,7 @@ export async function filterClientsWithoutDate(
 
     javelynThrowCount: {},
     totalSpent: {},
+    procedureType: {},
   }
 
   const dateFilters: any = {
@@ -42,6 +43,7 @@ export async function filterClientsWithoutDate(
         continue
       }
       if (specialFiltersNames.includes(data[i].type)) {
+        console.log(`special filter: ${data[i].type}`)
         specialFilters[data[i].type] = {}
         specialFilters[data[i].type].enabled = true
         specialFilters[data[i].type].comparator = data[i].comparator
@@ -50,6 +52,8 @@ export async function filterClientsWithoutDate(
         usedFilterOperators[data[i].type] = true
         continue
       }
+
+      console.log(`NOT special filter: ${data[i].type}`)
 
       if (data[i].type === "ticketCount") {
         specialFilters.ticketCount.enabled = true
@@ -389,10 +393,10 @@ export async function filterClientsWithoutDate(
     }
   }
 
-  if (specialFilters.procedureType?.enabled) {
+  if (specialFilters.procedureType.enabled) {
     console.log("find by prctype enabled")
     console.log({ specialFilters })
-    if (specialFilters.procedureType?.comparator === "equals") {
+    if (specialFilters.procedureType.comparator === "equals") {
       clients = clients.filter((client) => {
         const ticketProcedures = client.tickets.map((t) => t.procedures)
 
@@ -404,7 +408,7 @@ export async function filterClientsWithoutDate(
           return client
       })
     }
-    if (specialFilters.procedureType?.comparator === "not") {
+    if (specialFilters.procedureType.comparator === "not") {
       clients = clients.filter((client) => {
         const ticketProcedures = client.tickets.map((t) => {
           return t.procedures
