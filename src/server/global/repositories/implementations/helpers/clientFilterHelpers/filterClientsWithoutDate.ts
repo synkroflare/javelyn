@@ -1,11 +1,9 @@
-import { PrismaClient } from "@prisma/client"
-import { IProcedure } from "../../../../../../server/global/models/IProcedure"
-import { IClient } from "../../../../models/IClient"
+import { Client, PrismaClient, Procedure } from "@prisma/client"
 
 export async function filterClientsWithoutDate(
   inputData: any,
   prismaClient: PrismaClient
-): Promise<IClient[] | void> {
+): Promise<Client[] | void> {
   const usedFilterOperators: any = {}
 
   const data = inputData.filters
@@ -15,7 +13,7 @@ export async function filterClientsWithoutDate(
     AND: [],
   }
 
-  const specialFiltersNames = ["totalSpent", "findByProcedure"]
+  const specialFiltersNames = ["totalSpent", "findByProcedure", "procedureType"]
 
   const specialFilters: any = {
     ticketCount: {
@@ -462,7 +460,7 @@ export async function filterClientsWithoutDate(
           return t.procedures
         })
 
-        const procedureNames = ([] as IProcedure[])
+        const procedureNames = ([] as Procedure[])
           .concat(...ticketProcedures)
           .map((p) => p.name)
 
@@ -476,13 +474,44 @@ export async function filterClientsWithoutDate(
           return t.procedures
         })
 
-        const procedureNames = ([] as IProcedure[])
+        const procedureNames = ([] as Procedure[])
           .concat(...ticketProcedures)
           .map((p) => p.name)
 
         if (
           !procedureNames.includes(specialFilters.findByProcedure.stringValue)
         )
+          return client
+      })
+    }
+  }
+
+  if (specialFilters.procedureType?.enabled) {
+    if (specialFilters.procedureType?.comparator === "equals") {
+      clients = clients.filter((client) => {
+        const ticketProcedures = client.tickets.map((t) => {
+          return t.procedures
+        })
+
+        const procedureTypes = ([] as Procedure[])
+          .concat(...ticketProcedures)
+          .map((p) => p.type)
+
+        if (procedureTypes.includes(specialFilters.procedureType.stringValue))
+          return client
+      })
+    }
+    if (specialFilters.procedureType?.comparator === "not") {
+      clients = clients.filter((client) => {
+        const ticketProcedures = client.tickets.map((t) => {
+          return t.procedures
+        })
+
+        const procedureTypes = ([] as Procedure[])
+          .concat(...ticketProcedures)
+          .map((p) => p.type)
+
+        if (!procedureTypes.includes(specialFilters.procedureType.stringValue))
           return client
       })
     }
