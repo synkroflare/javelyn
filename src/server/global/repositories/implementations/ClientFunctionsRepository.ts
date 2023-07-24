@@ -161,7 +161,13 @@ export class ClientFunctionsRepository implements IClientRepository {
           where: {
             id: client.id,
           },
-          data: updateData,
+          data: {
+            statusActive: activeData.isActive,
+            daysSinceLastTicket: activeData.daysSinceLastTicket,
+            rankName: activeData.rankName,
+            flexusEntryDates: updateData.flexusEntryDates,
+            javelynEntryDates: updateData.javelynEntryDates,
+          },
         })
       )
     }
@@ -173,7 +179,7 @@ export class ClientFunctionsRepository implements IClientRepository {
 
   async updateClientProcedureType(
     data: TFindClientData
-  ): Promise<IClient[] | void> {
+  ): Promise<Client[] | void> {
     const allClients = await this.client.client.findMany({
       where: {
         companyId: data.companyId,
