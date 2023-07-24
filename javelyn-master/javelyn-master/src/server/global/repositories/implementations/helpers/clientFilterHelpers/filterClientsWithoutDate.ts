@@ -7,6 +7,8 @@ export async function filterClientsWithoutDate(
 ): Promise<Client[] | void> {
   const usedFilterOperators: any = {}
 
+  console.log("git test update filter")
+
   const data = inputData.filters
 
   const filtersData: any = {
