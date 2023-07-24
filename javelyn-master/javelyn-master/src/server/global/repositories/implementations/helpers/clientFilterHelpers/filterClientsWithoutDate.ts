@@ -1,4 +1,4 @@
-import { Client, PrismaClient } from "@prisma/client"
+import { Client, PrismaClient, Procedure } from "@prisma/client"
 import { IProcedure } from "server/global/models/IProcedure"
 
 export async function filterClientsWithoutDate(
@@ -14,7 +14,7 @@ export async function filterClientsWithoutDate(
     AND: [],
   }
 
-  const specialFiltersNames = ["totalSpent", "findByProcedure"]
+  const specialFiltersNames = ["totalSpent", "findByProcedure", "procedureType"]
 
   const specialFilters: any = {
     ticketCount: {
@@ -120,7 +120,7 @@ export async function filterClientsWithoutDate(
         continue
       }
 
-      if (data[i].type === "procedureType") {
+      if (data[i].type === "procedureCategory") {
         switch (usedFilterOperators[data[i].type]) {
           case true:
             filtersData.OR.push({
@@ -383,6 +383,39 @@ export async function filterClientsWithoutDate(
 
         if (
           !procedureNames.includes(specialFilters.findByProcedure.stringValue)
+        )
+          return client
+      })
+    }
+  }
+
+  if (specialFilters.procedureType?.enabled) {
+    if (specialFilters.findByProcedure?.comparator === "equals") {
+      clients = clients.filter((client) => {
+        const ticketProcedures = client.tickets.map((t) => {
+          return t.procedures
+        })
+
+        const procedureTypes = ([] as Procedure[])
+          .concat(...ticketProcedures)
+          .map((p) => p.type)
+
+        if (procedureTypes.includes(specialFilters.findByProcedure.stringValue))
+          return client
+      })
+    }
+    if (specialFilters.findByProcedure?.comparator === "not") {
+      clients = clients.filter((client) => {
+        const ticketProcedures = client.tickets.map((t) => {
+          return t.procedures
+        })
+
+        const procedureTypes = ([] as Procedure[])
+          .concat(...ticketProcedures)
+          .map((p) => p.type)
+
+        if (
+          !procedureTypes.includes(specialFilters.findByProcedure.stringValue)
         )
           return client
       })
