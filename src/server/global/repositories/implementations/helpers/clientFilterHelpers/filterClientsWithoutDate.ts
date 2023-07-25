@@ -475,7 +475,7 @@ export async function filterClientsWithoutDate(
     }
   }
 
-  console.log(formatedData)
+  console.log({ formatedData: JSON.stringify(formatedData) })
 
   return clients
 }
