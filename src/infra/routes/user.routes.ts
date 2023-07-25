@@ -1,5 +1,5 @@
 import { Router } from "express"
-import { ReadUserController } from "../../../javelyn-master/javelyn-master/src/server/modules/users/ReadUserController"
+import { ReadUserController } from "../../server/modules/users/ReadUserController"
 import { CreateUserController } from "../../server/modules/users/CreateUserController"
 import { DeleteUserController } from "../../server/modules/users/DeleteUserController"
 import { FindUserByNameController } from "../../server/modules/users/FindUserByNameController"
