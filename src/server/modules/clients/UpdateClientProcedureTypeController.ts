@@ -1,3 +1,4 @@
+import { Client } from "@prisma/client"
 import { Request, Response } from "express"
 import { container, inject, injectable } from "tsyringe"
 import { IClient } from "../../global/models/IClient"
@@ -15,10 +16,10 @@ export class UpdateClientProcedureTypeController {
       const updateClientProcedureType = container.resolve(
         UpdateClientProcedureType
       )
-      const handleActiveStatus = await updateClientProcedureType.execute(data)
+      const updateClientType = await updateClientProcedureType.execute(data)
 
       const jsonClient = JSON.stringify(
-        handleActiveStatus,
+        updateClientType,
         (key, value) => (typeof value === "bigint" ? Number(value) : value) // return everything else unchanged
       )
 
@@ -36,7 +37,7 @@ export class UpdateClientProcedureType {
     private clientRepository: IClientRepository
   ) {}
 
-  async execute(data: TRequest): Promise<IClient[] | void> {
+  async execute(data: TRequest): Promise<Client[] | void> {
     const readClient = await this.clientRepository.updateClientProcedureType(
       data
     )

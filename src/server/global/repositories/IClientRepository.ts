@@ -44,13 +44,13 @@ export type THomeCheckData = {
 
 export interface IClientRepository {
   homeCheck(data: THomeCheckData): Promise<any>
-  create(data: TCreateClientData): Promise<IClient | void>
-  find(data: TFindClientData): Promise<IClient[] | void>
-  findWithFilters(data: any): Promise<IClient[] | void>
-  findByName(data: TFindClientByNameData): Promise<IClient[] | void>
-  update(data: TUpdateClientData): Promise<IClient | void>
+  create(data: TCreateClientData): Promise<Client | void>
+  find(data: TFindClientData): Promise<Client[] | void>
+  findWithFilters(data: any): Promise<Client[] | void>
+  findByName(data: TFindClientByNameData): Promise<Client[] | void>
+  update(data: TUpdateClientData): Promise<Client | void>
   updateMany(data: TUpdateClientData): Promise<number | void>
-  delete(data: TFindClientData): Promise<IClient | void>
+  delete(data: TFindClientData): Promise<Client | void>
   handleActiveStatus(data: THandleActiveStatusData): Promise<Client[] | void>
-  updateClientProcedureType(data: TFindClientData): Promise<IClient[] | void>
+  updateClientProcedureType(data: TFindClientData): Promise<Client[] | void>
 }

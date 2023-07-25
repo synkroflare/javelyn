@@ -22,7 +22,7 @@ export class ClientFunctionsRepository implements IClientRepository {
     private readonly client: PrismaClient
   ) {}
 
-  async update(data: TUpdateClientData): Promise<void | IClient> {
+  async update(data: TUpdateClientData): Promise<void | Client> {
     const client = await this.client.client.update({
       where: {
         id: data.id,
@@ -74,7 +74,7 @@ export class ClientFunctionsRepository implements IClientRepository {
     return clients.count
   }
 
-  async delete(data: TFindClientData): Promise<void | IClient> {
+  async delete(data: TFindClientData): Promise<void | Client> {
     const client = await this.client.client.update({
       where: {
         id: data.id,
@@ -87,12 +87,12 @@ export class ClientFunctionsRepository implements IClientRepository {
     return client
   }
 
-  async create(data: TCreateClientData): Promise<IClient | void> {
+  async create(data: TCreateClientData): Promise<Client | void> {
     const client = await this.client.client.create({ data })
     return client
   }
 
-  async find(data: TFindClientData): Promise<IClient[] | void> {
+  async find(data: TFindClientData): Promise<Client[] | void> {
     if (data.id) {
       data.id = Number(data.id)
     }
@@ -311,18 +311,18 @@ export class ClientFunctionsRepository implements IClientRepository {
     return allClients
   }
 
-  async findWithFilters(data: any): Promise<IClient[] | void> {
+  async findWithFilters(data: any): Promise<Client[] | void> {
     return await filterClientsWithoutDate(data, this.client)
   }
 
-  async findByName(data: TFindClientByNameData): Promise<IClient[] | void> {
+  async findByName(data: TFindClientByNameData): Promise<Client[] | void> {
     const clients = await this.client.client.findMany({
       where: {
         statusTrashed: false,
       },
     })
 
-    const filteredClients: IClient[] = []
+    const filteredClients: Client[] = []
 
     for (let i = 0; i < clients.length; i++) {
       if (clients[i].name.includes(data.name)) {

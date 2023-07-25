@@ -13,7 +13,7 @@ export async function filterClientsWithoutDate(
     AND: [],
   }
 
-  const specialFiltersNames = ["totalSpent", "findByProcedure", "procedureType"]
+  const specialFiltersNames = ["totalSpent", "findByProcedure"]
 
   const specialFilters: any = {
     ticketCount: {
@@ -242,6 +242,53 @@ export async function filterClientsWithoutDate(
             filtersData.AND.push({
               [data[i].type]: {
                 contains: data[i].value.toString(),
+              },
+            })
+            break
+        }
+        usedFilterOperators[data[i].type] = true
+        continue
+      }
+
+      if (data[i].type === "procedureType") {
+        switch (usedFilterOperators[data[i].type]) {
+          case true:
+            filtersData.OR.push({
+              tickets: {
+                [data[i].type === "equals" ? "some" : "none"]: {
+                  procedures: {
+                    some: {
+                      type: data[i].value.toString(),
+                    },
+                  },
+                },
+              },
+            })
+            delete filtersData.AND[data[i].type]
+            break
+          case false:
+            filtersData.AND.push({
+              tickets: {
+                [data[i].type === "equals" ? "some" : "none"]: {
+                  procedures: {
+                    some: {
+                      type: data[i].value.toString(),
+                    },
+                  },
+                },
+              },
+            })
+            break
+          default:
+            filtersData.AND.push({
+              tickets: {
+                [data[i].type === "equals" ? "some" : "none"]: {
+                  procedures: {
+                    some: {
+                      type: data[i].value.toString(),
+                    },
+                  },
+                },
               },
             })
             break
