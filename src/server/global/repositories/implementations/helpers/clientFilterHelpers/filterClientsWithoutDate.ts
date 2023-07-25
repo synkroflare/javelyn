@@ -225,7 +225,7 @@ export async function filterClientsWithoutDate(
       if (data[i].type === "procedureType") {
         filtersData.AND.push({
           tickets: {
-            [data[i].type === "equals" ? "some" : "none"]: {
+            [data[i].comparator === "equals" ? "some" : "none"]: {
               procedures: {
                 some: {
                   type: data[i].value.toString(),
