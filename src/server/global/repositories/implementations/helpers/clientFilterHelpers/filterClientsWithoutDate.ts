@@ -132,34 +132,6 @@ export async function filterClientsWithoutDate(
         continue
       }
 
-      if (data[i].type === "procedureType") {
-        switch (usedFilterOperators[data[i].type]) {
-          case true:
-            filtersData.OR.push({
-              [data[i].type]: {
-                [data[i].comparator]: data[i].value,
-              },
-            })
-            delete filtersData.AND[data[i].type]
-            break
-          case false:
-            filtersData.AND.push({
-              [data[i].type]: {
-                [data[i].comparator]: data[i].value,
-              },
-            })
-            break
-          default:
-            filtersData.AND.push({
-              [data[i].type]: {
-                [data[i].comparator]: data[i].value,
-              },
-            })
-            break
-        }
-        usedFilterOperators[data[i].type] = true
-        continue
-      }
       if (
         data[i].type === "statusActive" ||
         data[i].type === "statusAvailableToReturn"
@@ -251,48 +223,18 @@ export async function filterClientsWithoutDate(
       }
 
       if (data[i].type === "procedureType") {
-        switch (usedFilterOperators[data[i].type]) {
-          case true:
-            filtersData.OR.push({
-              tickets: {
-                [data[i].type === "equals" ? "some" : "none"]: {
-                  procedures: {
-                    some: {
-                      type: data[i].value.toString(),
-                    },
-                  },
+        filtersData.AND.push({
+          tickets: {
+            [data[i].type === "equals" ? "some" : "none"]: {
+              procedures: {
+                some: {
+                  type: data[i].value.toString(),
                 },
               },
-            })
-            delete filtersData.AND[data[i].type]
-            break
-          case false:
-            filtersData.AND.push({
-              tickets: {
-                [data[i].type === "equals" ? "some" : "none"]: {
-                  procedures: {
-                    some: {
-                      type: data[i].value.toString(),
-                    },
-                  },
-                },
-              },
-            })
-            break
-          default:
-            filtersData.AND.push({
-              tickets: {
-                [data[i].type === "equals" ? "some" : "none"]: {
-                  procedures: {
-                    some: {
-                      type: data[i].value.toString(),
-                    },
-                  },
-                },
-              },
-            })
-            break
-        }
+            },
+          },
+        })
+
         usedFilterOperators[data[i].type] = true
         continue
       }
@@ -528,37 +470,6 @@ export async function filterClientsWithoutDate(
         if (
           !procedureNames.includes(specialFilters.findByProcedure.stringValue)
         )
-          return client
-      })
-    }
-  }
-
-  if (specialFilters.procedureType?.enabled) {
-    if (specialFilters.procedureType?.comparator === "equals") {
-      clients = clients.filter((client) => {
-        const ticketProcedures = client.tickets.map((t) => {
-          return t.procedures
-        })
-
-        const procedureTypes = ([] as Procedure[])
-          .concat(...ticketProcedures)
-          .map((p) => p.type)
-
-        if (procedureTypes.includes(specialFilters.procedureType.stringValue))
-          return client
-      })
-    }
-    if (specialFilters.procedureType?.comparator === "not") {
-      clients = clients.filter((client) => {
-        const ticketProcedures = client.tickets.map((t) => {
-          return t.procedures
-        })
-
-        const procedureTypes = ([] as Procedure[])
-          .concat(...ticketProcedures)
-          .map((p) => p.type)
-
-        if (!procedureTypes.includes(specialFilters.procedureType.stringValue))
           return client
       })
     }
