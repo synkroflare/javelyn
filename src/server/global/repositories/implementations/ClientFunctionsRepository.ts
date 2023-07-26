@@ -1,6 +1,7 @@
 import { Client, PrismaClient } from "@prisma/client"
 import { randomUUID } from "crypto"
-import { inject, injectable } from "tsyringe"
+import { container, inject, injectable } from "tsyringe"
+import winston, { Logger } from "winston"
 import { IClient } from "../../models/IClient"
 import {
   IClientRepository,
@@ -113,6 +114,7 @@ export class ClientFunctionsRepository implements IClientRepository {
   async handleActiveStatus(
     data: THandleActiveStatusData
   ): Promise<Client[] | void> {
+    const logger = container.resolve<winston.Logger>("Logger")
     const allClients = await this.client.client.findMany({
       where: {
         companyId: data.companyId,
@@ -155,7 +157,10 @@ export class ClientFunctionsRepository implements IClientRepository {
           ]
         }
       }
-      console.log({ updateData })
+      logger.log({
+        level: "info",
+        message: `updateData: ${JSON.stringify(updateData)}`,
+      })
       promiseArray.push(
         this.client.client.update({
           where: {
