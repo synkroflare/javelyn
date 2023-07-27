@@ -157,10 +157,9 @@ export class ClientFunctionsRepository implements IClientRepository {
           ]
         }
       }
-      logger.log({
-        level: "info",
-        message: `updateData: ${JSON.stringify(updateData)}`,
-      })
+
+      if (!activeData.daysSinceLastTicket) continue
+
       promiseArray.push(
         this.client.client.update({
           where: {
