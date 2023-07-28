@@ -158,7 +158,13 @@ export class ClientFunctionsRepository implements IClientRepository {
         }
       }
 
-      if (!activeData.daysSinceLastTicket) continue
+      if (
+        isNaN(activeData.daysSinceLastTicket) ||
+        activeData.daysSinceLastTicket === null
+      )
+        continue
+
+      logger.info(JSON.stringify(activeData))
 
       promiseArray.push(
         this.client.client.update({
