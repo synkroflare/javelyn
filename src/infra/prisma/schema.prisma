@@ -138,7 +138,7 @@ model Lead {
   updatedAt DateTime  @default(now())
   trashedAt DateTime?
 
-  @@unique([companyId, name])
+  @@unique([companyId, name, phone])
 }
 
 model Client {

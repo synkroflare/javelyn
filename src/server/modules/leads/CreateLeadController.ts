@@ -34,16 +34,37 @@ export class CreateLeadUseCase {
   async execute(inputData: any): Promise<JavelynResponse | void> {
     const { data } = inputData
     if (data.name) {
-      const findLead = await this.client.lead.findFirst({
+      if (!data.phone) {
+        const findLeadWithoutPhone = await this.client.lead.findFirst({
+          where: {
+            name: data.name,
+            companyId: data.companyId,
+          },
+        })
+        if (findLeadWithoutPhone) {
+          return {
+            meta: {
+              status: 400,
+              message: `Já existe um lead cadastrado sem telefone e com este nome.`,
+            },
+            objects: null,
+          }
+        }
+      }
+      const findLead = await this.client.lead.findUnique({
         where: {
-          name: data.name,
+          companyId_name_phone: {
+            companyId: data.companyId,
+            name: data.name,
+            phone: data.phone,
+          },
         },
       })
       if (findLead) {
         return {
           meta: {
             status: 400,
-            message: `Já existe um lead cadastrado com este nome.`,
+            message: `Já existe um lead cadastrado com este nome e telefone.`,
           },
           objects: null,
         }
