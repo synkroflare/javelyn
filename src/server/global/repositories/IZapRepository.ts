@@ -1,7 +1,7 @@
 import { IClient } from "../models/IClient"
 
 export type TSendMessageData = {
-  phoneNumbers: number[]
+  phoneNumbers: string[]
   clientsData: IClient[]
   message: string
   companyId: number

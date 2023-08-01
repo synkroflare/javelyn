@@ -9,7 +9,6 @@ export const startContainers = async () => {
   handleRepositoriesContainers()
   handleZapContainer()
   initLogger()
-  cronJobs()
 
   return "sucess"
 }

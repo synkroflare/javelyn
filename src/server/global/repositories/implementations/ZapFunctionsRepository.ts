@@ -1,6 +1,6 @@
 import { PrismaClient } from "@prisma/client"
 import { container, inject, injectable } from "tsyringe"
-import { Client, LocalAuth, NoAuth } from "whatsapp-web.js"
+import { Client, LocalAuth } from "whatsapp-web.js"
 import {
   IZapRepository,
   THandleConnectionData,
@@ -32,7 +32,7 @@ export class ZapFunctionsRepository implements IZapRepository {
               continue
             }
             zapClient.sendMessage(
-              `55${data.phoneNumbers[i]}@c.us`,
+              `55${data.phoneNumbers[i].trim()}@c.us`,
               data.message
             )
             console.log(
@@ -71,8 +71,14 @@ export class ZapFunctionsRepository implements IZapRepository {
           continue
         }
 
-        zapClient.sendMessage(`55${data.clientsData[i].phone}@c.us`, format1)
-        console.log("Sending message to: " + data.clientsData[i].phone)
+        if (data.clientsData[i].phone) {
+          zapClient.sendMessage(
+            `55${data.clientsData[i].phone?.trim()}@c.us`,
+            format1
+          )
+          console.log("Sending message to: " + data.clientsData[i].phone)
+        }
+
         try {
           await this.prismaClient.throw.create({
             data: {

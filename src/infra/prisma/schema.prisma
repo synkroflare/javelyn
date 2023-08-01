@@ -408,6 +408,7 @@ model Evaluation {
 
   evaluationPotential String
   observation String?
+  duration Int @default(15)
   
   company           Company  @relation(fields: [companyId],references: [id])
   creator           User   @relation(fields: [creatorId], references: [id])
