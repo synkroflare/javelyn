@@ -164,7 +164,7 @@ export async function filterClientsWithoutDate(
         continue
       }
 
-      if (data[i].type === "rankName") {
+      if (["rankName", "phone", "name"].includes(data[i].type)) {
         switch (usedFilterOperators[data[i].type]) {
           case true:
             filtersData.OR.push({
@@ -185,35 +185,6 @@ export async function filterClientsWithoutDate(
             filtersData.AND.push({
               [data[i].type]: {
                 [data[i].comparator]: data[i].value.toString(),
-              },
-            })
-            break
-        }
-        usedFilterOperators[data[i].type] = true
-        continue
-      }
-
-      if (data[i].type === "name") {
-        switch (usedFilterOperators[data[i].type]) {
-          case true:
-            filtersData.OR.push({
-              [data[i].type]: {
-                contains: data[i].value.toString(),
-              },
-            })
-            delete filtersData.AND[data[i].type]
-            break
-          case false:
-            filtersData.AND.push({
-              [data[i].type]: {
-                contains: data[i].value.toString(),
-              },
-            })
-            break
-          default:
-            filtersData.AND.push({
-              [data[i].type]: {
-                contains: data[i].value.toString(),
               },
             })
             break
