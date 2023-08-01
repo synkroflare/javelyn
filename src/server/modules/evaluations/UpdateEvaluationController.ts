@@ -65,19 +65,32 @@ export class UpdateEvaluationUseCase {
       const taskDate = new Date()
       taskDate.setDate(taskDate.getDate() + 1)
 
+      const targetUpdate = evaluation.lead
+        ? this.client.lead.updateMany({
+            where: {
+              id: targetId,
+            },
+            data: {
+              absences: {
+                increment: 1,
+              },
+              leadStatus: "LEAD",
+            },
+          })
+        : this.client.client.updateMany({
+            where: {
+              id: targetId,
+            },
+            data: {
+              absences: {
+                increment: 1,
+              },
+            },
+          })
+
       const prismaOps = await this.client.$transaction([
         this.client.evaluation.update(data),
-        this.client.lead.update({
-          where: {
-            id: targetId,
-          },
-          data: {
-            absences: {
-              increment: 1,
-            },
-            leadStatus: "LEAD",
-          },
-        }),
+        targetUpdate,
         this.client.task.create({
           data: {
             companyId: evaluation.companyId,
