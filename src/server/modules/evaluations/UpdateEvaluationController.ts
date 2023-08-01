@@ -82,6 +82,7 @@ export class UpdateEvaluationUseCase {
           data: {
             companyId: evaluation.companyId,
             targetDate: taskDate,
+            category: "FALTA",
             title: `Resgate de falta de avaliação`,
             body: `Esta task foi gerada automaticamente. \n\n ${targetName} faltou à uma avaliação marcada por ${
               evaluation.creator.name
