@@ -62,6 +62,7 @@ export class ShutdownConnectionsUseCase {
       if (!container.isRegistered("zapClient-" + user.id)) continue
       const zapClient = container.resolve<Client>("zapClient-" + user.id)
       await zapClient.destroy()
+      container.registerInstance<string>("zapClient-" + user.id, "disconnected")
     }
 
     await this.client.company.update({

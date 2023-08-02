@@ -22,7 +22,7 @@ export class ZapFunctionsRepository implements IZapRepository {
         return "No connection"
       }
 
-      console.log({ cdata: data.clientsData })
+      console.log({ data })
 
       if (!data.clientsData || data.clientsData.length === 0) {
         if (data.phoneNumbers) {
@@ -32,7 +32,7 @@ export class ZapFunctionsRepository implements IZapRepository {
               continue
             }
             zapClient.sendMessage(
-              `55${data.phoneNumbers[i].trim()}@c.us`,
+              `55${data.phoneNumbers[i].toString().trim()}@c.us`,
               data.message
             )
             console.log(
@@ -73,7 +73,7 @@ export class ZapFunctionsRepository implements IZapRepository {
 
         if (data.clientsData[i].phone) {
           zapClient.sendMessage(
-            `55${data.clientsData[i].phone?.trim()}@c.us`,
+            `55${data.clientsData[i].phone?.toString().trim()}@c.us`,
             format1
           )
           console.log("Sending message to: " + data.clientsData[i].phone)
@@ -153,6 +153,8 @@ export class ZapFunctionsRepository implements IZapRepository {
     const clientCheck = check
       ? container.resolve("zapClient-" + user.id)
       : undefined
+
+    console.log({ check, clientCheck })
 
     if (!check || clientCheck === "disconnected") {
       const client = new Client({
