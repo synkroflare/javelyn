@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE "Task" ADD COLUMN     "rating" INTEGER NOT NULL DEFAULT 5;
