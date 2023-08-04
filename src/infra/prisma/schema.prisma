@@ -352,6 +352,7 @@ model Task {
   creatorId Int
   title     String
   body      String
+  conclusion String @default("Nenhuma conclusão definida.")
   category  String    @default("LEAD")
 
   targets     Client[]
