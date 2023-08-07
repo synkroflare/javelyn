@@ -75,6 +75,8 @@ model Ticket {
   assignedUser                User?       @relation(name: "assignee", fields: [assignedUserId], references: [id])
   company                     Company     @relation(fields: [companyId], references: [id])
 
+  trashedReason String @default("")
+
   statusPostponed            Boolean @default(false)
   statusAbsent               Boolean @default(false)
   statusDone                 Boolean @default(false)
@@ -246,7 +248,8 @@ model User {
 
   createdTickets  Ticket[] @relation("creator")
   assignedTickets Ticket[] @relation("assignee")
-  createdGroups   Group[]
+  createdGroups   Group[]  @relation("creator" )
+  assignedGroups Group[] @relation("assigned")
   createdLists    List[]
   throws          Throw[]
   clients         Client[]
@@ -281,7 +284,8 @@ model Group {
 
   clients Client[]
   company Company  @relation(fields: [companyId], references: [id])
-  creator User     @relation(fields: [creatorId], references: [id])
+  creator User     @relation(name:"creator",fields: [creatorId], references: [id])
+  assignedUsers User[] @relation(name:"assigned")
 }
 
 model List {

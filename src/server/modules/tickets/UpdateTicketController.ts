@@ -1,3 +1,4 @@
+import { PrismaClient } from "@prisma/client"
 import { Request, Response } from "express"
 import { container, inject, injectable } from "tsyringe"
 import { ITicket } from "../../global/models/ITicket"
@@ -5,6 +6,7 @@ import {
   ITicketRepository,
   TUpdateTicketData,
 } from "../../global/repositories/ITicketRepository"
+import { JavelynResponse } from "../leads/CreateLeadController"
 
 export class UpdateTicketController {
   async handle(request: Request, response: Response): Promise<Response> {
@@ -20,7 +22,13 @@ export class UpdateTicketController {
 
       return response.status(201).send(json)
     } catch (error: any) {
-      return response.status(400).send(error.message)
+      return response.status(400).send({
+        meta: {
+          message: error.message,
+          status: 400,
+        },
+        objects: null,
+      })
     }
   }
 }
@@ -28,12 +36,18 @@ export class UpdateTicketController {
 @injectable()
 export class UpdateTicketUseCase {
   constructor(
-    @inject("TicketRepository")
-    private ticketRepository: ITicketRepository
+    @inject("PrismaClient")
+    private client: PrismaClient
   ) {}
 
-  async execute(data: TUpdateTicketData): Promise<ITicket | void> {
-    const updateTicket = await this.ticketRepository.update(data)
-    return updateTicket
+  async execute(data: any): Promise<JavelynResponse | void> {
+    const updateTicket = await this.client.ticket.update(data)
+    return {
+      meta: {
+        message: "Tickets atualizados.",
+        status: 200,
+      },
+      objects: [updateTicket],
+    }
   }
 }

@@ -1,7 +1,7 @@
+import { PrismaClient } from "@prisma/client"
 import { Request, Response } from "express"
 import { container, inject, injectable } from "tsyringe"
-import { ITicket } from "../../global/models/ITicket"
-import { ITicketRepository } from "../../global/repositories/ITicketRepository"
+import { JavelynResponse } from "../leads/CreateLeadController"
 
 type TRequest = {
   id?: number
@@ -22,7 +22,13 @@ export class ReadTicketController {
 
       return response.status(201).send(json)
     } catch (error: any) {
-      return response.status(400).send(error.message)
+      return response.status(400).send({
+        meta: {
+          message: error.message,
+          status: 400,
+        },
+        objects: null,
+      })
     }
   }
 }
@@ -30,12 +36,18 @@ export class ReadTicketController {
 @injectable()
 export class ReadTicketUseCase {
   constructor(
-    @inject("TicketRepository")
-    private ticketRepository: ITicketRepository
+    @inject("PrismaClient")
+    private client: PrismaClient
   ) {}
 
-  async execute(data: TRequest): Promise<ITicket[] | void> {
-    const readTicket = await this.ticketRepository.find(data)
-    return readTicket
+  async execute(data: any): Promise<JavelynResponse | void> {
+    const ticket = await this.client.ticket.findFirst(data)
+    return {
+      meta: {
+        message: "Tickets encontrados.",
+        status: 200,
+      },
+      objects: [ticket],
+    }
   }
 }

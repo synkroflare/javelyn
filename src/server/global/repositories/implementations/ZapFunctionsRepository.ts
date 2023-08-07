@@ -1,6 +1,6 @@
 import { PrismaClient } from "@prisma/client"
 import { container, inject, injectable } from "tsyringe"
-import { Client, LocalAuth } from "whatsapp-web.js"
+import { Client, LocalAuth, MessageMedia } from "whatsapp-web.js"
 import {
   IZapRepository,
   THandleConnectionData,
@@ -15,14 +15,13 @@ export class ZapFunctionsRepository implements IZapRepository {
   ) {}
 
   async sendMessage(data: TSendMessageData): Promise<string> {
+    console.log({ data })
     try {
       const zapClient = container.resolve<Client>("zapClient-" + data.userId)
       const status = await zapClient.getState()
       if (status === null) {
         return "No connection"
       }
-
-      console.log({ data })
 
       if (!data.clientsData || data.clientsData.length === 0) {
         if (data.phoneNumbers) {
@@ -31,6 +30,7 @@ export class ZapFunctionsRepository implements IZapRepository {
               console.log("Invalid phone number: " + data.phoneNumbers[i])
               continue
             }
+
             zapClient.sendMessage(
               `55${data.phoneNumbers[i].toString().trim()}@c.us`,
               data.message

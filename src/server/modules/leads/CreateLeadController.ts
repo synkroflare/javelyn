@@ -63,7 +63,7 @@ export class CreateLeadUseCase {
       if (findLead) {
         return {
           meta: {
-            status: 400,
+            status: 301,
             message: `Já existe um lead cadastrado com este nome e telefone.`,
           },
           objects: null,

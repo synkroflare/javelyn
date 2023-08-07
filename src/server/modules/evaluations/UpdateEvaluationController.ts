@@ -99,7 +99,7 @@ export class UpdateEvaluationUseCase {
             title: `Resgate de falta de avaliação`,
             body: `Esta task foi gerada automaticamente. \n\n ${targetName} faltou à uma avaliação marcada por ${
               evaluation.creator.name
-            } para ${evaluation.targetDate?.toLocaleString()}`,
+            } para ${evaluation.targetDate?.toLocaleString("pt-BR")}`,
             creatorId:
               evaluation.lead?.creatorId ??
               evaluation.client?.responsibleUserId ??

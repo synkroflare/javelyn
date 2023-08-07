@@ -32,6 +32,7 @@ export class FindLeadsUseCase {
 
   async execute(data: TFindLeadsData): Promise<Lead[] | void> {
     const foundLeads = await this.client.lead.findMany(data)
+
     return foundLeads
   }
 }

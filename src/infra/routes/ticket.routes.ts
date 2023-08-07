@@ -13,10 +13,10 @@ const deleteTicketController = new DeleteTicketController()
 
 const ticketRoutes = Router()
 
-ticketRoutes.propfind("/", readTicketController.handle)
-ticketRoutes.propfind("/filter", findTicketController.handle)
+ticketRoutes.propfind("/read", readTicketController.handle)
+ticketRoutes.propfind("/find", findTicketController.handle)
 ticketRoutes.post("/", createTicketController.handle)
-ticketRoutes.patch("/", updateTicketController.handle)
+ticketRoutes.patch("/update", updateTicketController.handle)
 ticketRoutes.delete("/", deleteTicketController.handle)
 
 export { ticketRoutes }
