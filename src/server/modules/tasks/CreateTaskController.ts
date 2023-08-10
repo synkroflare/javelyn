@@ -42,7 +42,6 @@ export class CreateTaskUseCase {
   ) {}
 
   async execute(data: TCreateTaskData): Promise<Task | void> {
-    const string = ""
     const createTask = await this.client.task.create(data)
     return createTask
   }
