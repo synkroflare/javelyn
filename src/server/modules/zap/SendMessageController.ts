@@ -9,8 +9,10 @@ export class SendMessageController {
   async handle(request: Request, response: Response): Promise<Response> {
     try {
       const data = request.body
+      const file = request.file
+      console.log({ file })
       const sendMessageUseCase = container.resolve(SendMessageUseCase)
-      const sendMessage = await sendMessageUseCase.execute(data)
+      const sendMessage = await sendMessageUseCase.execute({ ...data, file })
 
       return response.status(201).json(sendMessage)
     } catch (error: any) {

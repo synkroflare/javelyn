@@ -6,6 +6,7 @@ export type TSendMessageData = {
   message: string
   companyId: number
   userId: number
+  image?: any
 }
 
 export type THandleConnectionData = {

@@ -14,8 +14,9 @@ export class ZapFunctionsRepository implements IZapRepository {
     private readonly prismaClient: PrismaClient
   ) {}
 
-  async sendMessage(data: TSendMessageData): Promise<string> {
-    console.log({ data })
+  async sendMessage(formData: any): Promise<string> {
+    console.log({ formData })
+    const data = JSON.parse(formData.data)
     try {
       const zapClient = container.resolve<Client>("zapClient-" + data.userId)
       const status = await zapClient.getState()
@@ -31,16 +32,38 @@ export class ZapFunctionsRepository implements IZapRepository {
               continue
             }
 
-            zapClient.sendMessage(
-              `55${data.phoneNumbers[i].toString().trim()}@c.us`,
-              data.message
-            )
-            console.log(
-              "Sending message with no cdata to: " + data.phoneNumbers[i]
-            )
-            await new Promise((resolve) => setTimeout(resolve, 1000)) ///// WAITS FOR 1 SECOND TO PREVENT WHATSAPP BUG FOR SENDING TOO MANY MSGS
+            if (formData.file) {
+              // Converte os dados da imagem em um buffer
+              const imageBuffer = Buffer.from(formData.file.buffer, "base64")
+              // Cria o objeto MessageMedia com a imagem
+              const media = new MessageMedia(
+                formData.file.mimetype,
+                imageBuffer.toString("base64")
+              )
+
+              zapClient.sendMessage(
+                `55${data.phoneNumbers[i].toString().trim()}@c.us`,
+                data.message,
+                {
+                  media,
+                }
+              )
+              console.log(
+                "Sending message with no cdata to: " + data.phoneNumbers[i]
+              )
+              await new Promise((resolve) => setTimeout(resolve, 1000)) ///// WAITS FOR 1 SECOND TO PREVENT WHATSAPP BUG FOR SENDING TOO MANY MSGS
+            } else {
+              zapClient.sendMessage(
+                `55${data.phoneNumbers[i].toString().trim()}@c.us`,
+                data.message
+              )
+              console.log(
+                "Sending message with no cdata to: " + data.phoneNumbers[i]
+              )
+              await new Promise((resolve) => setTimeout(resolve, 1000)) ///// WAITS FOR 1 SECOND TO PREVENT WHATSAPP BUG FOR SENDING TOO MANY MSGS
+            }
           }
-          return "Message sent successfully, without client data."
+          return "Messages sent successfully, without client data."
         }
         return "No client data provided."
       }

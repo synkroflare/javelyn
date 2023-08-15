@@ -1,8 +1,10 @@
-export const logHandler = async (req: any) => {
+import { Request } from "express"
+
+export const logHandler = async (req: Request) => {
   if (req.method === "OPTIONS") return
 
   const newLine = `{
-    originalUrl: ${req.originalUrl},
+    originalUrl: ${req.originalUrl?.split("?")[0]},
     method: ${req.method},
     body: ${JSON.stringify(req.body)},
     query:  ${JSON.stringify(req.query)},

@@ -357,6 +357,7 @@ model Task {
   title     String
   body      String
   conclusion String @default("Nenhuma conclusão definida.")
+  conclusionCategory String @default("INDEFINIDO")
   rating     Int     @default(5)
   category  String    @default("LEAD")
 
@@ -415,6 +416,7 @@ model Evaluation {
   evaluationPotential String
   observation String?
   duration Int @default(15)
+  rescheduled Boolean @default(false)
   
   company           Company  @relation(fields: [companyId],references: [id])
   creator           User   @relation(fields: [creatorId], references: [id])
