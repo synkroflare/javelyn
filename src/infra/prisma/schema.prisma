@@ -226,8 +226,8 @@ model Procedure {
 
   ticket                  Ticket[]
   ticketAvailableToReturn Ticket[] @relation(name: "availableToReturn")
-  quotes                  Quote[] @relation(name: "procedures")
-  openQuotes                  Quote[] @relation(name: "openProcedures")
+  quotes                  Quote[] 
+  openQuotes               Quote[] @relation(name: "openProcedures")
   company                 Company  @relation(fields: [companyId], references: [id])
 
   statusTrashed Boolean  @default(false)
@@ -390,7 +390,7 @@ model Quote {
   observation String?
   value Int @default(0)
   
-  procedures Procedure[] @relation(name: "procedures")
+  procedures Procedure[] 
   openProcedures Procedure[] @relation(name: "openProcedures")
   ticket     Ticket?     @relation(fields: [ticketId], references: [id])
   tasks     Task[]
