@@ -68,6 +68,7 @@ model Ticket {
   assignedDate  DateTime?
   postponedDate DateTime?
 
+  quotes                      Quote[]
   procedures                  Procedure[]
   proceduresAvailableToReturn Procedure[] @relation(name: "availableToReturn")
   client                      Client      @relation(fields: [clientName, companyId], references: [name, companyId])
@@ -225,7 +226,8 @@ model Procedure {
 
   ticket                  Ticket[]
   ticketAvailableToReturn Ticket[] @relation(name: "availableToReturn")
-  quotes                  Quote[]
+  quotes                  Quote[] @relation(name: "procedures")
+  openQuotes                  Quote[] @relation(name: "openProcedures")
   company                 Company  @relation(fields: [companyId], references: [id])
 
   statusTrashed Boolean  @default(false)
@@ -380,6 +382,7 @@ model Quote {
   creatorId Int
   clientId  Int?
   leadId    Int?
+  ticketId  Int?
   isClientQuote Boolean @default(true)
   isLeadQuote Boolean @default(false)
 
@@ -387,7 +390,9 @@ model Quote {
   observation String?
   value Int @default(0)
   
-  procedures Procedure[]
+  procedures Procedure[] @relation(name: "procedures")
+  openProcedures Procedure[] @relation(name: "openProcedures")
+  ticket     Ticket?     @relation(fields: [ticketId], references: [id])
   tasks     Task[]
   proceduresData    Json
   company           Company  @relation(fields: [companyId],references: [id])

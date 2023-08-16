@@ -1,8 +1,6 @@
 import { Client, PrismaClient } from "@prisma/client"
-import { randomUUID } from "crypto"
 import { container, inject, injectable } from "tsyringe"
 import winston, { Logger } from "winston"
-import { IClient } from "../../models/IClient"
 import {
   IClientRepository,
   TCreateClientData,

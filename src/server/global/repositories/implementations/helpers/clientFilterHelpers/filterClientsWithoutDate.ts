@@ -428,6 +428,24 @@ export async function filterClientsWithoutDate(
           return client
       })
     }
+    if (specialFilters.findByProcedure?.comparator === "contains") {
+      clients = clients.filter((client) => {
+        const ticketProcedures = client.tickets.map((t) => {
+          return t.procedures
+        })
+
+        const procedureNames = ([] as Procedure[])
+          .concat(...ticketProcedures)
+          .map((p) => p.name)
+
+        for (const procedureName of procedureNames) {
+          if (
+            procedureName.includes(specialFilters.findByProcedure.stringValue)
+          )
+            return client
+        }
+      })
+    }
     if (specialFilters.findByProcedure?.comparator === "not") {
       clients = clients.filter((client) => {
         const ticketProcedures = client.tickets.map((t) => {
