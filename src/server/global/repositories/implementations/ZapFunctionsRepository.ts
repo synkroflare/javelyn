@@ -16,7 +16,7 @@ export class ZapFunctionsRepository implements IZapRepository {
 
   async sendMessage(formData: any): Promise<string> {
     console.log({ formData })
-    const data = JSON.parse(formData.data)
+    const data = formData
     try {
       const zapClient = container.resolve<Client>("zapClient-" + data.userId)
       const status = await zapClient.getState()
