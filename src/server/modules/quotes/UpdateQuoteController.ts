@@ -1,6 +1,7 @@
 import { PrismaClient, Quote } from "@prisma/client"
 import { Request, Response } from "express"
 import { container, inject, injectable } from "tsyringe"
+import { JavelynResponse } from "../leads/CreateLeadController"
 
 export class UpdateQuoteController {
   async handle(request: Request, response: Response): Promise<Response> {
@@ -11,7 +12,13 @@ export class UpdateQuoteController {
 
       return response.status(201).json(updateQuote)
     } catch (error: any) {
-      return response.status(400).send(error.message)
+      return response.status(400).send({
+        meta: {
+          status: 400,
+          message: error.message,
+        },
+        objects: null,
+      })
     }
   }
 }
@@ -23,8 +30,14 @@ export class UpdateQuoteUseCase {
     private readonly client: PrismaClient
   ) {}
 
-  async execute(data: any): Promise<Quote | void> {
+  async execute(data: any): Promise<JavelynResponse> {
     const updateQuote = await this.client.quote.update(data)
-    return updateQuote
+    return {
+      meta: {
+        status: 200,
+        message: "Orçamento atualizado com sucesso.",
+      },
+      objects: [updateQuote],
+    }
   }
 }

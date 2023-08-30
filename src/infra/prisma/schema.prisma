@@ -49,6 +49,8 @@ model Ticket {
   procedureNames  String[]
   proceduresData  Json?
   clientId        Int?
+  evaluationId    Int?
+  taskId         Int?
   clientName      String
   clientCPF       String?
   companyId       Int
@@ -76,6 +78,7 @@ model Ticket {
   assignedUser                User?       @relation(name: "assignee", fields: [assignedUserId], references: [id])
   company                     Company     @relation(fields: [companyId], references: [id])
 
+
   trashedReason String @default("")
 
   statusPostponed            Boolean @default(false)
@@ -97,8 +100,9 @@ model Lead {
   uuid              String? @default(uuid())
   companyId         Int
   creatorId         Int
+  clientId          Int? @unique
   name              String
-  CPF               String? @unique
+  CPF               String? 
   phone             String
   mail              String?  
   absences            Int   @default(0)
@@ -128,6 +132,7 @@ model Lead {
   evaluations Evaluation[]
   creator         User     @relation(fields: [creatorId], references: [id])
   company         Company  @relation(fields: [companyId], references: [id])
+  client         Client?  @relation(fields: [clientId], references: [id])
 
   statusTrashed           Boolean @default(false)
   trashedReason           String  @default("")
@@ -142,6 +147,7 @@ model Lead {
   trashedAt DateTime?
 
   @@unique([companyId, name, phone])
+  @@unique([companyId, CPF])
 }
 
 model Client {
@@ -150,7 +156,7 @@ model Client {
   companyId         Int
   responsibleUserId Int?
   name              String
-  CPF               String? @unique
+  CPF               String? 
   phone             String?
   mail              String?
   rank              Int     @default(50)
@@ -187,6 +193,7 @@ model Client {
   procedureTotalCount         Int    @default(0)
   procedureType               String @default("PADRÃO")
 
+  lead Lead?
   tickets         Ticket[]
   groups          Group[]
   sentLists       List[]   @relation(name: "sent")
@@ -212,6 +219,7 @@ model Client {
   trashedAt DateTime?
 
   @@unique([companyId, name])
+  @@unique([companyId, CPF])
 }
 
 model Procedure {
@@ -405,6 +413,7 @@ model Quote {
   statusAbsent  Boolean  @default(false)
   statusAccomplished Boolean  @default(false)
   statusTrashed Boolean  @default(false)
+  trashedReason String @default("INDEFINIDO")
   createdAt     DateTime @default(now())
   updatedAt     DateTime @default(now())
 }
@@ -415,6 +424,9 @@ model Evaluation {
   creatorId Int
   clientId  Int?
   leadId    Int?
+  quoteId   Int?
+  ticketId  Int?
+  rescheduledEvaluationId Int?
   isClientEvaluation Boolean @default(true)
   isLeadEvaluation Boolean @default(false)
 
@@ -422,11 +434,14 @@ model Evaluation {
   observation String?
   duration Int @default(15)
   rescheduled Boolean @default(false)
+  conclusionCategory String @default("INDEFINIDO")
   
   company           Company  @relation(fields: [companyId],references: [id])
   creator           User   @relation(fields: [creatorId], references: [id])
   client            Client? @relation(fields: [clientId], references: [id])
   lead              Lead?   @relation(fields: [leadId], references: [id])
+  rescheduledEvaluation Evaluation? @relation(fields: [rescheduledEvaluationId], references: [id], name: "rescheduledEvaluation")
+  rescheduledFrom Evaluation[] @relation( name: "rescheduledEvaluation")
 
   targetDate    DateTime?
   handledAtDate DateTime?

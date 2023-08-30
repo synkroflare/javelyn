@@ -1,9 +1,16 @@
-import { Evaluation, Lead, PrismaClient, Task } from "@prisma/client"
+import { PrismaClient, Task, Evaluation } from "@prisma/client"
 import { Request, Response } from "express"
 import { JavelynResponse } from "server/modules/leads/CreateLeadController"
 import { container, inject, injectable } from "tsyringe"
 
 type TRequest = {
+  evaluation: {
+    where: Evaluation
+    data: Evaluation
+    include?: any
+    skip?: any
+    take?: any
+  }
   task: {
     where: {}
     data: Task
@@ -11,29 +18,18 @@ type TRequest = {
     skip?: any
     take?: any
   }
-  evaluation: {
-    data: Evaluation
-    include?: any
-    skip?: any
-    take?: any
-  }
-  lead?: {
-    where: {}
-    data: Lead
-    include?: any
-    skip?: any
-    take?: any
-  }
 }
 
-export class TaskToEvaluationController {
+export class EvaluationToTaskController {
   async handle(request: Request, response: Response): Promise<Response> {
     try {
       const data = request.body
-      const taskToEvaluationUseCase = container.resolve(TaskToEvaluationUseCase)
-      const taskToEvaluation = await taskToEvaluationUseCase.execute(data)
+      const evaluationToQuoteUseCase = container.resolve(
+        EvaluationToQuoteUseCase
+      )
+      const evaluationToQuote = await evaluationToQuoteUseCase.execute(data)
 
-      return response.status(201).json(taskToEvaluation)
+      return response.status(201).json(evaluationToQuote)
     } catch (error: any) {
       return response.status(400).send({
         meta: {
@@ -47,27 +43,28 @@ export class TaskToEvaluationController {
 }
 
 @injectable()
-export class TaskToEvaluationUseCase {
+export class EvaluationToQuoteUseCase {
   constructor(
     @inject("PrismaClient")
     private readonly client: PrismaClient
   ) {}
 
   async execute(data: TRequest): Promise<JavelynResponse> {
-    if (!data.task || !data.evaluation)
+    if (!data.evaluation || !data.task)
       throw new Error("Erro: dados insuficientes.")
-    const task = this.client.task.update(data.task)
-    const evaluation = this.client.evaluation.create(data.evaluation)
-    const lead = data.lead ? this.client.lead.update(data.lead) : undefined
 
-    let objects: any[] = []
+    const evaluation = this.client.evaluation.update(data.evaluation)
+    const newTask = this.client.task.create({
+      data: {
+        ...data.task.data,
+      },
+    })
 
-    if (lead) objects = await this.client.$transaction([task, evaluation, lead])
-    else objects = await this.client.$transaction([task, evaluation])
+    const objects = await this.client.$transaction([evaluation, newTask])
 
     return {
       meta: {
-        message: "A tarefa foi convertida para uma nova avaliação.",
+        message: "A avaliação foi convertida para uma nova tarefa.",
         status: 200,
       },
       objects,

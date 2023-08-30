@@ -1,13 +1,16 @@
 import { PrismaClient, Task } from "@prisma/client"
 import { Request, Response } from "express"
 import { container, inject, injectable } from "tsyringe"
+import { JavelynResponse } from "../leads/CreateLeadController"
 
 type TRequest = {
-  where: {}
-  data: {}
-  include?: any
-  skip?: any
-  take?: any
+  task: {
+    where: Task
+    data: Task
+    include?: any
+    skip?: any
+    take?: any
+  }
 }
 
 export class UpdateTaskController {
@@ -19,7 +22,13 @@ export class UpdateTaskController {
 
       return response.status(201).json(updateTask)
     } catch (error: any) {
-      return response.status(400).send(error.message)
+      return response.status(400).send({
+        meta: {
+          status: 200,
+          message: error.message,
+        },
+        objects: null,
+      })
     }
   }
 }
@@ -31,8 +40,14 @@ export class UpdateTaskUseCase {
     private readonly client: PrismaClient
   ) {}
 
-  async execute(data: TRequest): Promise<Task | void> {
-    const updateTask = await this.client.task.update(data)
-    return updateTask
+  async execute(data: TRequest): Promise<JavelynResponse> {
+    const updateTask = await this.client.task.update(data.task)
+    return {
+      meta: {
+        status: 200,
+        message: "Tarefa atualizada com sucesso.",
+      },
+      objects: [updateTask],
+    }
   }
 }

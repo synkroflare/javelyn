@@ -1,6 +1,6 @@
 import { Task, PrismaClient, Quote } from "@prisma/client"
 import { Request, Response } from "express"
-import { getDaysDifference } from "server/global/repositories/implementations/helpers/getDaysDifference"
+import { getDaysDifference } from "../../../../server/global/repositories/implementations/helpers/getDaysDifference"
 import { JavelynResponse } from "server/modules/leads/CreateLeadController"
 import { container, inject, injectable } from "tsyringe"
 

@@ -16,7 +16,7 @@
     "skipLibCheck": true,
     "strict": false,
     "strictNullChecks": true,
-    "target": "ES5"
+    "target": "ES2015"
   },
   "exclude": ["node_modules"],
   "include": ["**/*.ts", "**/*.tsx", "next-env.d.ts"]

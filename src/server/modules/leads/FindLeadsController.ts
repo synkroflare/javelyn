@@ -35,7 +35,7 @@ export class FindLeadsUseCase {
   ) {}
 
   async execute(data: TFindLeadsData): Promise<Lead[] | void> {
-    const specialFilters = ["taskCount"]
+    const specialFilters = ["taskCount", "anyEntry"]
     const usedSpecialFilters: object[] = []
     let updatedData = data
     console.log({ data })
@@ -66,8 +66,6 @@ export class FindLeadsUseCase {
       }
     }
 
-    console.log(JSON.stringify({ updatedData }))
-
     let foundLeads = await this.client.lead.findMany(updatedData)
 
     if (usedSpecialFilters.length > 0) {
@@ -85,12 +83,13 @@ export class FindLeadsUseCase {
         const comparator = Object.entries(
           Object.entries(specialFilter).flat()[1]
         )?.flat()[0]
-        const value = Number(
-          Object.entries(Object.entries(specialFilter).flat()[1])?.flat()[1]
-        )
-        console.log({ value, comparator })
-        if (isNaN(value)) continue
+        const stringValue: string = Object.entries(
+          Object.entries(specialFilter).flat()[1]
+        )?.flat()[1] as string
+        const value = Number(stringValue)
+
         if (Object.keys(specialFilter).toString() === "taskCount") {
+          if (isNaN(value)) continue
           foundLeads = foundLeads.filter((lead: any) => {
             if (comparator === "gt" && lead.targetedTasks?.length > value)
               return lead
@@ -99,6 +98,18 @@ export class FindLeadsUseCase {
             if (comparator === "equals" && lead.targetedTasks?.length === value)
               return lead
             if (comparator === "not" && lead.targetedTasks?.length !== value)
+              return lead
+          })
+        }
+        if (Object.keys(specialFilter).toString() === "anyEntry") {
+          foundLeads = foundLeads.filter((lead: Lead) => {
+            if (
+              comparator === "gt" &&
+              lead.javelynEntryDates.filter(
+                (entry: Date) =>
+                  new Date(entry).getTime() > new Date(stringValue).getTime()
+              ).length > 0
+            )
               return lead
           })
         }

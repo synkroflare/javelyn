@@ -1,12 +1,12 @@
-import { Quote, Lead, PrismaClient, Task } from "@prisma/client"
+import { PrismaClient, Task, Evaluation } from "@prisma/client"
 import { Request, Response } from "express"
 import { JavelynResponse } from "server/modules/leads/CreateLeadController"
 import { container, inject, injectable } from "tsyringe"
 
 type TRequest = {
-  task: {
-    where: {}
-    data: Task
+  evaluation: {
+    where: Evaluation
+    data: Evaluation
     include?: any
     skip?: any
     take?: any
@@ -26,14 +26,16 @@ type TRequest = {
   }
 }
 
-export class TaskToQuoteController {
+export class EvaluationToQuoteController {
   async handle(request: Request, response: Response): Promise<Response> {
     try {
       const data = request.body
-      const taskToQuoteUseCase = container.resolve(TaskToQuoteUseCase)
-      const taskToQuote = await taskToQuoteUseCase.execute(data)
+      const evaluationToQuoteUseCase = container.resolve(
+        EvaluationToQuoteUseCase
+      )
+      const evaluationToQuote = await evaluationToQuoteUseCase.execute(data)
 
-      return response.status(201).json(taskToQuote)
+      return response.status(201).json(evaluationToQuote)
     } catch (error: any) {
       return response.status(400).send({
         meta: {
@@ -47,25 +49,25 @@ export class TaskToQuoteController {
 }
 
 @injectable()
-export class TaskToQuoteUseCase {
+export class EvaluationToQuoteUseCase {
   constructor(
     @inject("PrismaClient")
     private readonly client: PrismaClient
   ) {}
 
   async execute(data: TRequest): Promise<JavelynResponse> {
-    if (!data.task?.data?.id || !data.quote || !data.newTask)
+    if (!data.evaluation?.data?.id || !data.quote || !data.newTask)
       throw new Error("Erro: dados insuficientes.")
 
     const quote = await this.client.quote.create(data.quote)
-    const task = this.client.task.update({
+    const evaluation = this.client.evaluation.update({
       where: {
-        id: data.task.data.id,
+        id: data.evaluation.data.id,
       },
       data: {
-        statusHandled: true,
+        statusAccomplished: true,
         handledAtDate: new Date(),
-        conclusionCategory: data.task.data.conclusionCategory,
+        conclusionCategory: data.evaluation.data.conclusionCategory,
       },
     })
     const newTask = this.client.task.create({
@@ -81,7 +83,7 @@ export class TaskToQuoteUseCase {
       },
     })
 
-    const objects = await this.client.$transaction([task, newTask])
+    const objects = await this.client.$transaction([evaluation, newTask])
 
     return {
       meta: {

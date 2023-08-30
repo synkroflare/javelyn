@@ -1,4 +1,4 @@
-import { Task, Lead, PrismaClient } from "@prisma/client"
+import { Task, Lead, PrismaClient, Quote } from "@prisma/client"
 import { Request, Response } from "express"
 import { JavelynResponse } from "server/modules/leads/CreateLeadController"
 import { container, inject, injectable } from "tsyringe"
@@ -52,14 +52,14 @@ export class TaskToTaskUseCase {
     const task = this.client.task.update(data.task)
     const newTask = this.client.task.create(data.newTask)
 
-    this.client.$transaction([task, newTask])
+    const objects = await this.client.$transaction([task, newTask])
 
     return {
       meta: {
         message: "A tarefa foi convertida para um nova tarefa.",
         status: 200,
       },
-      objects: [{ task }, { newTask }],
+      objects,
     }
   }
 }
