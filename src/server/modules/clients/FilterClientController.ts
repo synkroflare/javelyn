@@ -1,6 +1,6 @@
+import { Client } from "@prisma/client"
 import { Request, Response } from "express"
 import { container, inject, injectable } from "tsyringe"
-import { IClient } from "../../global/models/IClient"
 import { IClientRepository } from "../../global/repositories/IClientRepository"
 
 type TRequest = {
@@ -34,7 +34,7 @@ export class FilterClientUseCase {
     private clientRepository: IClientRepository
   ) {}
 
-  async execute(data: TRequest): Promise<IClient[] | void> {
+  async execute(data: TRequest): Promise<Client[] | void> {
     const readClient = await this.clientRepository.findWithFilters(data)
     return readClient
   }

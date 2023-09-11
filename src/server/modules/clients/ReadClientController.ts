@@ -1,8 +1,6 @@
 import { PrismaClient } from "@prisma/client"
 import { Request, Response } from "express"
 import { container, inject, injectable } from "tsyringe"
-import { IClient } from "../../global/models/IClient"
-import { IClientRepository } from "../../global/repositories/IClientRepository"
 import { JavelynResponse } from "../leads/CreateLeadController"
 
 type TRequest = {

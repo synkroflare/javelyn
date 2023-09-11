@@ -1,8 +1,6 @@
-import { PrismaClient } from "@prisma/client"
+import { Client, PrismaClient } from "@prisma/client"
 import { Request, Response } from "express"
 import { container, inject, injectable } from "tsyringe"
-import { IClient } from "../../global/models/IClient"
-import { IClientRepository } from "../../global/repositories/IClientRepository"
 
 type TRequest = {
   name: string
@@ -33,7 +31,7 @@ export class CreateClientUseCase {
     private prismaClient: PrismaClient
   ) {}
 
-  async execute(data: any): Promise<IClient | void> {
+  async execute(data: any): Promise<Client | void> {
     data.data.name = data.data.name.toUpperCase()
     const createClient = await this.prismaClient.client.create(data)
     return createClient

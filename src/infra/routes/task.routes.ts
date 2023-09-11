@@ -13,6 +13,7 @@ import { TaskToTaskQuoteController } from "../../server/modules/tasks/conclusion
 import { TaskToTaskController } from "../../server/modules/tasks/conclusions/TaskToTaskController"
 import { TaskToLeadDeactivateController } from "../../server/modules/tasks/conclusions/TaskToLeadDeactivateController"
 import { TaskToQuoteDeactivateController } from "../../server/modules/tasks/conclusions/TaskToQuoteDeactivateController"
+import { TaskToClientDeactivateController } from "../../server/modules/tasks/conclusions/TaskToClientDeactivateController"
 
 const readTaskController = new ReadTaskController()
 const findTasksController = new FindTasksController()
@@ -28,6 +29,7 @@ const taskToTaskQuoteController = new TaskToTaskQuoteController()
 const taskToTicketController = new TaskToTicketController()
 const taskToTaskController = new TaskToTaskController()
 const taskToLeadDeactivateController = new TaskToLeadDeactivateController()
+const taskToClientDeactivateController = new TaskToClientDeactivateController()
 const taskToQuoteDeactivateController = new TaskToQuoteDeactivateController()
 
 const taskRoutes = Router()
@@ -50,6 +52,10 @@ taskRoutes.patch("/cc/task-to-ticket", taskToTicketController.handle)
 taskRoutes.patch(
   "/cc/task-to-lead-deactivation",
   taskToLeadDeactivateController.handle
+)
+taskRoutes.patch(
+  "/cc/task-to-client-deactivation",
+  taskToClientDeactivateController.handle
 )
 taskRoutes.patch(
   "/cc/task-to-quote-deactivation",

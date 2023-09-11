@@ -38,6 +38,7 @@ export class UpdateManyLeadUseCase {
       )
       return 0
     }
+
     const updateLeads = await this.client.lead.updateMany(data)
     return updateLeads.count
   }

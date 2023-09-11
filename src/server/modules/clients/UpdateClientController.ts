@@ -1,6 +1,6 @@
+import { Client } from "@prisma/client"
 import { Request, Response } from "express"
 import { container, inject, injectable } from "tsyringe"
-import { IClient } from "../../global/models/IClient"
 import {
   IClientRepository,
   TUpdateClientData,
@@ -32,7 +32,7 @@ export class UpdateClientUseCase {
     private clientRepository: IClientRepository
   ) {}
 
-  async execute(data: TUpdateClientData): Promise<IClient | void> {
+  async execute(data: TUpdateClientData): Promise<Client | void> {
     const updateClient = await this.clientRepository.update(data)
     return updateClient
   }
