@@ -21,6 +21,7 @@ export class ZapFunctionsRepository implements IZapRepository {
       const zapClient = container.resolve<Client>("zapClient-" + data.userId)
       const status = await zapClient.getState()
       if (status === null) {
+        console.log("no connection")
         return "No connection"
       }
 
@@ -41,7 +42,7 @@ export class ZapFunctionsRepository implements IZapRepository {
                 imageBuffer.toString("base64")
               )
 
-              zapClient.sendMessage(
+              await zapClient.sendMessage(
                 `55${data.phoneNumbers[i].toString().trim()}@c.us`,
                 data.message,
                 {
@@ -53,7 +54,7 @@ export class ZapFunctionsRepository implements IZapRepository {
               )
               await new Promise((resolve) => setTimeout(resolve, 1000)) ///// WAITS FOR 1 SECOND TO PREVENT WHATSAPP BUG FOR SENDING TOO MANY MSGS
             } else {
-              zapClient.sendMessage(
+              await zapClient.sendMessage(
                 `55${data.phoneNumbers[i].toString().trim()}@c.us`,
                 data.message
               )
@@ -95,7 +96,7 @@ export class ZapFunctionsRepository implements IZapRepository {
         }
 
         if (data.clientsData[i].phone) {
-          zapClient.sendMessage(
+          await zapClient.sendMessage(
             `55${data.clientsData[i].phone?.toString().trim()}@c.us`,
             format1
           )
@@ -135,6 +136,7 @@ export class ZapFunctionsRepository implements IZapRepository {
 
       return "messages sent successfully"
     } catch (error: any) {
+      console.log(error)
       return error.message
     }
   }
