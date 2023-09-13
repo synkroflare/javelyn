@@ -1,13 +1,6 @@
 import { PrismaClient, User } from "@prisma/client"
 import { Request, Response } from "express"
 import { container, inject, injectable } from "tsyringe"
-import { IUser } from "../../global/models/IUser"
-import { IUserRepository } from "../../global/repositories/IUserRepository"
-
-type TRequest = {
-  id?: number
-  companyId: number
-}
 
 export class ReadUserController {
   async handle(request: Request, response: Response): Promise<Response> {

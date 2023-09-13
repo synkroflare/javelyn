@@ -5,6 +5,7 @@ import { router } from "./infra/routes"
 import fs from "fs"
 import https from "https"
 import { logHandler } from "./infra/logs/logHandler"
+import multer from "multer"
 
 const app = express()
 // Add headers before the routes are defined
@@ -32,6 +33,10 @@ app.use(function (req: Request, res: Response, next: NextFunction) {
   // Pass to next layer of middleware
   next()
 })
+
+app.use(multer().single("file"))
+app.use(express.json({ limit: "25mb" }))
+app.use(express.urlencoded({ limit: "25mb", extended: true }))
 
 app.use(express.json({ limit: "25mb" }))
 app.use(express.urlencoded({ limit: "25mb", extended: true }))

@@ -1,10 +1,7 @@
+import { PrismaClient } from "@prisma/client"
 import { Request, Response } from "express"
 import { container, inject, injectable } from "tsyringe"
-import { IGroup } from "../../global/models/IGroup"
-import {
-  IGroupRepository,
-  TUpdateGroupData,
-} from "../../global/repositories/IGroupRepository"
+import { JavelynResponse } from "../leads/CreateLeadController"
 
 export class UpdateGroupController {
   async handle(request: Request, response: Response): Promise<Response> {
@@ -20,7 +17,13 @@ export class UpdateGroupController {
 
       return response.status(201).send(jsonData)
     } catch (error: any) {
-      return response.status(400).send(error.message)
+      return response.status(400).send({
+        meta: {
+          status: 400,
+          message: error.message,
+        },
+        objects: null,
+      })
     }
   }
 }
@@ -28,12 +31,18 @@ export class UpdateGroupController {
 @injectable()
 export class UpdateGroupUseCase {
   constructor(
-    @inject("GroupRepository")
-    private groupRepository: IGroupRepository
+    @inject("PrismaClient")
+    private client: PrismaClient
   ) {}
 
-  async execute(data: TUpdateGroupData): Promise<IGroup | void> {
-    const updateGroup = await this.groupRepository.update(data)
-    return updateGroup
+  async execute(data: any): Promise<JavelynResponse> {
+    const updateGroup = await this.client.group.update(data)
+    return {
+      meta: {
+        status: 200,
+        message: "Grupo atualizado com sucesso.",
+      },
+      objects: [updateGroup],
+    }
   }
 }
