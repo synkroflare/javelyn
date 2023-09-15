@@ -33,8 +33,13 @@ app.use((req, res, next) => {
     origin !== "https://javelyn.vercel.app" &&
     req.ip !== "::ffff:187.39.124.191"
   ) {
-    console.log("forbidden origin:")
+    console.log("FORBIDDEN ORIGIN/ID DETECTED !!!!!!!!!!!!!!!!!!!!")
+    console.log("##################################################")
     console.log({ origin, ip: req.ip })
+    logHandler(req)
+    console.log("FORBIDDEN ORIGIN/ID DETECTED !!!!!!!!!!!!!!!!!!!!")
+    console.log("##################################################")
+
     return
   }
   logHandler(req)
