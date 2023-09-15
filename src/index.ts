@@ -30,6 +30,11 @@ app.use(express.urlencoded({ limit: "25mb", extended: true }))
 app.use((req, res, next) => {
   const origin = req.get("Origin")
   console.log("Origem da requisição:", origin)
+
+  if (origin !== "https://javelyn.vercel.app") {
+    console.log("forbidden origin:", origin)
+    return
+  }
   logHandler(req)
   next()
 })
