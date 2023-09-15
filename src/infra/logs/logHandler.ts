@@ -1,7 +1,7 @@
 import { Request } from "express"
 import { Logger } from "winston"
 
-export const logHandler = async (req: Request, logger: Logger) => {
+export const logHandler = async (req: Request, colorCode: string) => {
   if (req.method === "OPTIONS") return
 
   const newLine = `{
@@ -14,5 +14,5 @@ export const logHandler = async (req: Request, logger: Logger) => {
     origin: ${req.get("Origin")}
   },`
 
-  logger.info(newLine)
+  console.log(colorCode, newLine)
 }

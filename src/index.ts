@@ -36,16 +36,28 @@ app.use((req, res, next) => {
     origin !== "https://javelyn.vercel.app" &&
     req.ip !== "::ffff:187.39.124.191"
   ) {
-    logger.warn("FORBIDDEN ORIGIN/ID DETECTED !!!!!!!!!!!!!!!!!!!!")
-    logger.warn("##################################################")
-    logger.warn({ origin, ip: req.ip })
-    logHandler(req, logger)
-    logger.warn("FORBIDDEN ORIGIN/ID DETECTED !!!!!!!!!!!!!!!!!!!!")
-    logger.warn("##################################################")
+    console.log(
+      "\x1b[31m%s\x1b[0m",
+      "FORBIDDEN ORIGIN/ID DETECTED !!!!!!!!!!!!!!!!!!!!"
+    )
+    console.log(
+      "\x1b[31m%s\x1b[0m",
+      "##################################################"
+    )
+    console.log({ origin, ip: req.ip })
+    logHandler(req, "\x1b[31m%s\x1b[0m")
+    console.log(
+      "\x1b[31m%s\x1b[0m",
+      "FORBIDDEN ORIGIN/ID DETECTED !!!!!!!!!!!!!!!!!!!!"
+    )
+    console.log(
+      "\x1b[31m%s\x1b[0m",
+      "##################################################"
+    )
 
     return
   }
-  logHandler(req, logger)
+  logHandler(req, "\x1b[36m%s\x1b[0m")
   next()
 })
 
