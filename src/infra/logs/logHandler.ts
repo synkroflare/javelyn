@@ -13,6 +13,4 @@ export const logHandler = async (req: Request) => {
   },`
 
   console.log(newLine)
-
-  console.log(req)
 }
