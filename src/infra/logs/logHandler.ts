@@ -10,6 +10,7 @@ export const logHandler = async (req: Request) => {
     query:  ${JSON.stringify(req.query)},
     date: ${new Date().toString()},
     ip: ${req.ip}
+    origin: ${req.get("Origin")}
   },`
 
   console.log(newLine)
