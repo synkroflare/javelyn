@@ -7,6 +7,7 @@ import https from "https"
 import { logHandler } from "./infra/logs/logHandler"
 import multer from "multer"
 import cors from "cors"
+import { createLogger } from "winston"
 
 const app = express()
 // Add headers before the routes are defined
@@ -27,22 +28,24 @@ app.use(express.urlencoded({ limit: "25mb", extended: true }))
 app.use(express.json({ limit: "25mb" }))
 app.use(express.urlencoded({ limit: "25mb", extended: true }))
 
+const logger = createLogger()
+
 app.use((req, res, next) => {
   const origin = req.get("Origin")
   if (
     origin !== "https://javelyn.vercel.app" &&
     req.ip !== "::ffff:187.39.124.191"
   ) {
-    console.log("FORBIDDEN ORIGIN/ID DETECTED !!!!!!!!!!!!!!!!!!!!")
-    console.log("##################################################")
-    console.log({ origin, ip: req.ip })
-    logHandler(req)
-    console.log("FORBIDDEN ORIGIN/ID DETECTED !!!!!!!!!!!!!!!!!!!!")
-    console.log("##################################################")
+    logger.warning("FORBIDDEN ORIGIN/ID DETECTED !!!!!!!!!!!!!!!!!!!!")
+    logger.warning("##################################################")
+    logger.warning({ origin, ip: req.ip })
+    logHandler(req, logger)
+    logger.warning("FORBIDDEN ORIGIN/ID DETECTED !!!!!!!!!!!!!!!!!!!!")
+    logger.warning("##################################################")
 
     return
   }
-  logHandler(req)
+  logHandler(req, logger)
   next()
 })
 
