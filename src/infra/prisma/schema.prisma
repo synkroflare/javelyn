@@ -100,6 +100,7 @@ model Lead {
   uuid              String? @default(uuid())
   companyId         Int
   creatorId         Int
+  assigneeId Int?
   clientId          Int? @unique
   name              String
   CPF               String? 
@@ -130,7 +131,8 @@ model Lead {
   targetedTasks   Task[]
   assignedQuotes  Quote[]
   evaluations Evaluation[]
-  creator         User     @relation(fields: [creatorId], references: [id])
+  creator         User     @relation(name: "creator",fields: [creatorId], references: [id])
+  assignee        User?    @relation(name:"assignee",fields: [assigneeId], references: [id])
   company         Company  @relation(fields: [companyId], references: [id])
   client         Client?  @relation(fields: [clientId], references: [id])
 
@@ -265,7 +267,8 @@ model User {
   clients         Client[]
   tasks           Task[]
   createdQuotes   Quote[]
-  createdLead     Lead[]
+  createdLead     Lead[] @relation(name: "creator")
+  assignedLeads   Lead[] @relation(name: "assignee")
   createdEvaluations Evaluation[]
 
   statusTrashed Boolean  @default(false)
