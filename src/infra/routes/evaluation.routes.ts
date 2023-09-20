@@ -7,6 +7,7 @@ import { UpdateManyEvaluationController } from "../../server/modules/evaluations
 import { EvaluationToAbsenceController } from "../../server/modules/evaluations/conclusions/EvaluationToAbsenceController"
 import { EvaluationToTaskController } from "../../server/modules/evaluations/conclusions/EvaluationToTaskController"
 import { EvaluationToQuoteController } from "../../server/modules/evaluations/conclusions/EvaluationToQuoteController"
+import { EvaluationToDeactivateController } from "../../server/modules/evaluations/conclusions/EvaluationToDeactivateController"
 
 const readEvaluationController = new ReadEvaluationController()
 const findEvaluationsController = new FindEvaluationsController()
@@ -16,6 +17,7 @@ const updateManyEvaluationController = new UpdateManyEvaluationController()
 const evaluationToAbsenceController = new EvaluationToAbsenceController()
 const evaluationTaskController = new EvaluationToTaskController()
 const evaluationToQuoteController = new EvaluationToQuoteController()
+const evaluationToDeactivateController = new EvaluationToDeactivateController()
 
 const evaluationRoutes = Router()
 
@@ -35,6 +37,10 @@ evaluationRoutes.patch(
 evaluationRoutes.patch(
   "/cc/evaluation-to-quote",
   evaluationToQuoteController.handle
+)
+evaluationRoutes.patch(
+  "/cc/evaluation-to-deactivate",
+  evaluationToDeactivateController.handle
 )
 
 export { evaluationRoutes }
