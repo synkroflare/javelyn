@@ -204,7 +204,7 @@ export class ZapFunctionsRepository implements IZapRepository {
         )
       })
 
-      console.log("1")
+      console.log(`getting qrcode for user:  #${user.id} ${user.name}`)
 
       const qrCode: string = await new Promise((resolve, reject) => {
         client.on("qr", async (qr) => {
@@ -221,25 +221,12 @@ export class ZapFunctionsRepository implements IZapRepository {
         })
       })
 
-      console.log("2", qrCode)
-
-      client.on("qr", async (qr) => {
-        console.log("zapClient-" + user.id + " qr on")
-        await this.prismaClient.user.update({
-          where: {
-            id: data.userId,
-          },
-          data: {
-            zapQrcode: qr,
-          },
-        })
-      })
+      console.log(`qrcode acquired for user:  #${user.id} ${user.name}`)
 
       client.on("authenticated", () => {
         console.log("zapClient-" + user.id + " AUTHENTICATED")
       })
       client.on("auth_failure", (msg) => {
-        // Fired if session restore was unsuccessful
         console.error("zapClient-" + user.id + " AUTHENTICATION FAILURE", msg)
       })
       client.on("ready", async () => {
@@ -273,7 +260,7 @@ export class ZapFunctionsRepository implements IZapRepository {
 
       return {
         isConnected: false,
-        qrCode: user.zapQrcode,
+        qrCode,
       }
     }
 
