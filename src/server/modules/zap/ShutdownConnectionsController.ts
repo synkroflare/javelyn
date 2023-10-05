@@ -2,10 +2,7 @@ import { PrismaClient } from "@prisma/client"
 import { Request, Response } from "express"
 import { container, inject, injectable } from "tsyringe"
 import WAWebJS, { Client } from "whatsapp-web.js"
-import {
-  IZapRepository,
-  THandleConnectionData,
-} from "../../global/repositories/IZapRepository"
+import fs from "fs"
 import { JavelynResponse } from "../leads/CreateLeadController"
 
 export class ShutdownConnectionsController {
@@ -59,10 +56,12 @@ export class ShutdownConnectionsUseCase {
       }
 
     for (const user of company.users) {
+      fs.rmdirSync("../../../../.wwebjs_auth/session-zapClient-" + user.id)
       if (!container.isRegistered("zapClient-" + user.id)) continue
       const zapClient = container.resolve<Client>("zapClient-" + user.id)
-      console.log(`zapclient-${user.id} state: ${await zapClient.getState()}`)
-      if (!zapClient.pupPage || zapClient.pupPage.isClosed()) {
+      const clientState = await zapClient.getState()
+      console.log(`zapclient-${user.id} state: ${clientState}`)
+      if (!zapClient.pupPage || zapClient.pupPage.isClosed() || !clientState) {
         console.log("skiping zapClient-" + user.id)
         continue
       }
