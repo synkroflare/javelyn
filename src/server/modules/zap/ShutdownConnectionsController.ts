@@ -62,7 +62,7 @@ export class ShutdownConnectionsUseCase {
 
       if (fs.existsSync(directoryPath)) {
         try {
-          await rimraf(directoryPath)
+          await rimraf(directoryPath, {})
         } catch (err) {
           console.error("Erro ao excluir a pasta:", err)
         }
