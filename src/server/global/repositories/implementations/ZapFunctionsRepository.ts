@@ -16,12 +16,10 @@ export class ZapFunctionsRepository implements IZapRepository {
 
   async sendMessage(formData: any): Promise<string> {
     const data = JSON.parse(formData.data)
-    console.log({ data })
     try {
       const zapClient = container.resolve<Client>("zapClient-" + data.userId)
       const status = await zapClient.getState()
       if (status === null) {
-        console.log("no connection")
         return "No connection"
       }
 
@@ -161,7 +159,6 @@ export class ZapFunctionsRepository implements IZapRepository {
   async handleConnection(
     data: THandleConnectionData
   ): Promise<{ isConnected: boolean; qrCode: string; message?: string }> {
-    console.log({ data })
     const user = await this.prismaClient.user.findFirst({
       where: {
         id: data.userId,
@@ -195,8 +192,6 @@ export class ZapFunctionsRepository implements IZapRepository {
     const clientCheck = check
       ? container.resolve("zapClient-" + user.id)
       : undefined
-
-    console.log({ check, clientCheck })
 
     if (!check || clientCheck === "disconnected") {
       const client = new Client({
