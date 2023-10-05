@@ -30,15 +30,8 @@ export class DisconnectUseCase {
   ) {}
 
   async execute(data: any): Promise<JavelynResponse> {
-    if (!data?.where?.id)
-      return {
-        meta: {
-          status: 400,
-          message: "ERRO: Dados insuficientes.",
-        },
-        objects: null,
-      }
-    console.log(`${data.where.id} is disconecting`)
+    if (!data?.where?.id) throw new Error("ERRO: Dados insuficientes.")
+    console.log(`#${data.where.id} is disconecting from javelyn-zap`)
     const user = await this.client.user.findFirst({
       where: {
         id: data.where.id,
@@ -48,14 +41,7 @@ export class DisconnectUseCase {
       },
     })
 
-    if (!user)
-      return {
-        meta: {
-          status: 400,
-          message: "ERRO: não foi possível encontrar 'user'.",
-        },
-        objects: null,
-      }
+    if (!user) throw new Error("ERRO: não foi possível encontrar 'user'.")
 
     if (!container.isRegistered("zapClient-" + user.id))
       return {
@@ -66,8 +52,8 @@ export class DisconnectUseCase {
         objects: null,
       }
 
-    const zapClient = container.resolve<Client>("zapClient-" + user.id)
-    if (!(await zapClient.getState()))
+    const zapClient = container.resolve<Client | string>("zapClient-" + user.id)
+    if (typeof zapClient === "string")
       return {
         meta: {
           status: 200,
@@ -75,7 +61,17 @@ export class DisconnectUseCase {
         },
         objects: null,
       }
-    await zapClient.destroy()
+
+    if (!(await zapClient.getState()) || !zapClient.pupBrowser)
+      return {
+        meta: {
+          status: 200,
+          message: "Não está conectado.",
+        },
+        objects: null,
+      }
+
+    await zapClient.pupBrowser.close()
     await this.client.company.update({
       where: {
         id: user.company.id,

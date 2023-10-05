@@ -255,6 +255,7 @@ model User {
   permission String
   companyId  Int
   zapQrcode  String @default("")
+  zapStatus  String @default("disconnected")
 
   company Company @relation(fields: [companyId], references: [id])
 
