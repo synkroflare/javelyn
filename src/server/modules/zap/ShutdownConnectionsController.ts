@@ -62,6 +62,7 @@ export class ShutdownConnectionsUseCase {
       console.log({ directoryPath })
 
       if (fs.existsSync(directoryPath)) {
+        console.log(`${directoryPath} exists`)
         try {
           fs.rmdirSync(directoryPath)
         } catch (err) {
@@ -75,6 +76,8 @@ export class ShutdownConnectionsUseCase {
 
       console.log(`zapclient-${user.id} |||| state: ${clientState}`)
       console.log(zapClient.info)
+      console.log(zapClient.pupBrowser)
+      console.log(zapClient.pupPage)
       if (!zapClient.pupPage || zapClient.pupPage.isClosed() || !clientState) {
         console.log("skiping zapClient-" + user.id)
         continue
