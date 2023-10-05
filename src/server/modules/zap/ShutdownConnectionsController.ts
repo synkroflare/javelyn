@@ -60,10 +60,7 @@ export class ShutdownConnectionsUseCase {
       const directoryPath =
         "/home/ec2-user/javelyn/.wwebjs_auth/session-zapClient-" + user.id
 
-      console.log({ directoryPath })
-
       if (fs.existsSync(directoryPath)) {
-        console.log(`${directoryPath} exists`)
         try {
           await rimraf(directoryPath)
         } catch (err) {

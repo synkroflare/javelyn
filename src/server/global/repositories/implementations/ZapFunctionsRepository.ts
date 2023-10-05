@@ -190,9 +190,11 @@ export class ZapFunctionsRepository implements IZapRepository {
         },
       })
       container.registerInstance<Client>("zapClient-" + user.id, client)
-      console.log("already created and registered for user: " + user.id)
+      console.log(
+        `client created and registered for user: #${user.id} ${user.name}`
+      )
       client.initialize()
-      console.log("already initialized for user: " + user.id)
+      console.log(`client initialized for user:  #${user.id} ${user.name}`)
 
       client.on("loading_screen", (percent, message) => {
         console.log(
@@ -202,9 +204,11 @@ export class ZapFunctionsRepository implements IZapRepository {
         )
       })
 
-      /* const qrCode: string = await new Promise((resolve, reject) => {
+      console.log("1")
+
+      const qrCode: string = await new Promise((resolve, reject) => {
         client.on("qr", async (qr) => {
-          console.log("zapClient-" + user.id + " qr on")
+          console.log("zapClient-" + user.id + " qr on nmeth")
           await this.prismaClient.user.update({
             where: {
               id: data.userId,
@@ -215,7 +219,9 @@ export class ZapFunctionsRepository implements IZapRepository {
           })
           resolve(qr)
         })
-      }) */
+      })
+
+      console.log("2", qrCode)
 
       client.on("qr", async (qr) => {
         console.log("zapClient-" + user.id + " qr on")

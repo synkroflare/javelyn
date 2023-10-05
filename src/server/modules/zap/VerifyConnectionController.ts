@@ -36,28 +36,14 @@ export class VerifyConnectionUseCase {
   ) {}
 
   async execute(data: any): Promise<JavelynResponse> {
-    if (!data?.where?.id)
-      return {
-        meta: {
-          status: 400,
-          message: "ERRO: Dados insuficientes.",
-        },
-        objects: null,
-      }
+    if (!data?.where?.id) throw new Error("ERRO: Dados insuficientes.")
+
     const user = await this.client.user.findFirst({
       where: {
         id: data.where.id,
       },
     })
-
-    if (!user)
-      return {
-        meta: {
-          status: 400,
-          message: "ERRO: não foi possível encontrar 'user'.",
-        },
-        objects: null,
-      }
+    if (!user) throw new Error("ERRO: não foi possível encontrar 'user'.")
 
     if (!container.isRegistered("zapClient-" + user.id))
       return {
@@ -68,7 +54,17 @@ export class VerifyConnectionUseCase {
         objects: null,
       }
 
-    const zapClient = container.resolve<Client>("zapClient-" + user.id)
+    const zapClient = container.resolve<Client | string>("zapClient-" + user.id)
+
+    if (typeof zapClient === "string")
+      return {
+        meta: {
+          status: 200,
+          message: "Não está conectado.",
+        },
+        objects: null,
+      }
+
     if (!(await zapClient.getState()))
       return {
         meta: {
