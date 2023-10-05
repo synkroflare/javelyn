@@ -4,6 +4,7 @@ import { container, inject, injectable } from "tsyringe"
 import WAWebJS, { Client } from "whatsapp-web.js"
 import fs from "fs"
 import { JavelynResponse } from "../leads/CreateLeadController"
+import { rimraf } from "rimraf"
 
 export class ShutdownConnectionsController {
   async handle(request: Request, response: Response): Promise<Response> {
@@ -64,7 +65,7 @@ export class ShutdownConnectionsUseCase {
       if (fs.existsSync(directoryPath)) {
         console.log(`${directoryPath} exists`)
         try {
-          fs.rmdirSync(directoryPath)
+          await rimraf(directoryPath)
         } catch (err) {
           console.error("Erro ao excluir a pasta:", err)
         }
