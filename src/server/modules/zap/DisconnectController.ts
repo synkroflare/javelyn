@@ -72,16 +72,28 @@ export class DisconnectUseCase {
       }
 
     await zapClient.pupBrowser.close()
-    await this.client.company.update({
-      where: {
-        id: user.company.id,
-      },
-      data: {
-        whatsappFreeSlots: {
-          increment: 1,
+
+    await this.client.$transaction([
+      this.client.company.update({
+        where: {
+          id: user.company.id,
         },
-      },
-    })
+        data: {
+          whatsappFreeSlots: {
+            increment: 1,
+          },
+        },
+      }),
+      this.client.user.update({
+        where: {
+          id: user.id,
+        },
+        data: {
+          zapStatus: "disconnected",
+        },
+      }),
+    ])
+
     return {
       meta: {
         status: 200,
