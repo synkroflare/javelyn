@@ -1,7 +1,7 @@
 import { PrismaClient } from "@prisma/client"
 import { Request, Response } from "express"
 import { container, inject, injectable } from "tsyringe"
-import { Client } from "whatsapp-web.js"
+import WAWebJS, { Client } from "whatsapp-web.js"
 import {
   IZapRepository,
   THandleConnectionData,
@@ -59,8 +59,12 @@ export class ShutdownConnectionsUseCase {
       }
 
     for (const user of company.users) {
+      console.log("shutting down zapClient-" + user.id)
       if (!container.isRegistered("zapClient-" + user.id)) continue
       const zapClient = container.resolve<Client>("zapClient-" + user.id)
+      if (!zapClient.pupPage || zapClient.pupPage.isClosed()) {
+        console.log("skiping zapClient-" + user.id)
+      }
       await zapClient.destroy()
       container.registerInstance<string>("zapClient-" + user.id, "disconnected")
     }
