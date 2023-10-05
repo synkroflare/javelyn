@@ -45,39 +45,37 @@ export class VerifyConnectionUseCase {
     })
     if (!user) throw new Error("ERRO: não foi possível encontrar 'user'.")
 
-    if (!container.isRegistered("zapClient-" + user.id))
+    if (user.zapStatus === "disconnected")
       return {
         meta: {
           status: 200,
-          message: "Não está conectado.",
+          message: "Não está conectado",
         },
         objects: null,
       }
 
-    const zapClient = container.resolve<Client | string>("zapClient-" + user.id)
-
-    if (typeof zapClient === "string")
+    if (user.zapStatus === "connected")
       return {
         meta: {
           status: 200,
-          message: "Não está conectado.",
+          message: "Está conectado",
         },
         objects: null,
       }
 
-    if (!(await zapClient.getState()))
+    if (user.zapStatus === "loading")
       return {
         meta: {
           status: 200,
-          message: "Não está conectado.",
+          message: "Carregando dados.",
         },
         objects: null,
       }
 
     return {
       meta: {
-        status: 200,
-        message: "Está conectado",
+        status: 400,
+        message: `O status do cliente de whatsapp não é válido. ${user.zapStatus}`,
       },
       objects: null,
     }

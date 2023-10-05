@@ -196,7 +196,15 @@ export class ZapFunctionsRepository implements IZapRepository {
       client.initialize()
       console.log(`client initialized for user:  #${user.id} ${user.name}`)
 
-      client.on("loading_screen", (percent, message) => {
+      client.on("loading_screen", async (percent, message) => {
+        await this.prismaClient.user.update({
+          where: {
+            id: user.id,
+          },
+          data: {
+            zapStatus: "loading",
+          },
+        })
         console.log(
           "zapClient-" + user.id + " LOADING SCREEN",
           percent,
@@ -231,6 +239,14 @@ export class ZapFunctionsRepository implements IZapRepository {
       })
       client.on("ready", async () => {
         console.log("zapClient-" + user.id + " READY")
+        await this.prismaClient.user.update({
+          where: {
+            id: user.id,
+          },
+          data: {
+            zapStatus: "connected",
+          },
+        })
         await this.prismaClient.company.update({
           where: {
             id: user.company.id,
