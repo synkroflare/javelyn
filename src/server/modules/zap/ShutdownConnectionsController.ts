@@ -59,6 +59,8 @@ export class ShutdownConnectionsUseCase {
       const directoryPath =
         "../../../../.wwebjs_auth/session-zapClient-" + user.id
 
+      console.log({ directoryPath })
+
       if (fs.existsSync(directoryPath)) {
         try {
           fs.rmdirSync(directoryPath)
@@ -70,7 +72,9 @@ export class ShutdownConnectionsUseCase {
       if (!container.isRegistered("zapClient-" + user.id)) continue
       const zapClient = container.resolve<Client>("zapClient-" + user.id)
       const clientState = await zapClient.getState()
+
       console.log(`zapclient-${user.id} |||| state: ${clientState}`)
+      console.log(zapClient.info)
       if (!zapClient.pupPage || zapClient.pupPage.isClosed() || !clientState) {
         console.log("skiping zapClient-" + user.id)
         continue
