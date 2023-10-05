@@ -56,11 +56,21 @@ export class ShutdownConnectionsUseCase {
       }
 
     for (const user of company.users) {
-      fs.rmdirSync("../../../../.wwebjs_auth/session-zapClient-" + user.id)
+      const directoryPath =
+        "../../../../.wwebjs_auth/session-zapClient-" + user.id
+
+      if (fs.existsSync(directoryPath)) {
+        try {
+          fs.rmdirSync(directoryPath)
+        } catch (err) {
+          console.error("Erro ao excluir a pasta:", err)
+        }
+      }
+
       if (!container.isRegistered("zapClient-" + user.id)) continue
       const zapClient = container.resolve<Client>("zapClient-" + user.id)
       const clientState = await zapClient.getState()
-      console.log(`zapclient-${user.id} state: ${clientState}`)
+      console.log(`zapclient-${user.id} |||| state: ${clientState}`)
       if (!zapClient.pupPage || zapClient.pupPage.isClosed() || !clientState) {
         console.log("skiping zapClient-" + user.id)
         continue
