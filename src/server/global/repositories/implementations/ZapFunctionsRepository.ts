@@ -34,9 +34,7 @@ export class ZapFunctionsRepository implements IZapRepository {
             }
 
             if (formData.file) {
-              // Converte os dados da imagem em um buffer
               const imageBuffer = Buffer.from(formData.file.buffer, "base64")
-              // Cria o objeto MessageMedia com a imagem
               const media = new MessageMedia(
                 formData.file.mimetype,
                 imageBuffer.toString("base64")
@@ -69,6 +67,16 @@ export class ZapFunctionsRepository implements IZapRepository {
         return "No client data provided."
       }
 
+      const imageBuffer = formData.file
+        ? Buffer.from(formData.file.buffer, "base64")
+        : null
+      const media = imageBuffer
+        ? new MessageMedia(
+            formData.file.mimetype,
+            imageBuffer.toString("base64")
+          )
+        : null
+
       for (let i = 0; i < data.clientsData.length; i++) {
         if (
           !data.clientsData[i].phone ||
@@ -96,10 +104,19 @@ export class ZapFunctionsRepository implements IZapRepository {
         }
 
         if (data.clientsData[i].phone) {
-          await zapClient.sendMessage(
-            `55${data.clientsData[i].phone?.toString().trim()}@c.us`,
-            format1
-          )
+          if (media)
+            await zapClient.sendMessage(
+              `55${data.phoneNumbers[i].toString().trim()}@c.us`,
+              data.message,
+              {
+                media,
+              }
+            )
+          else
+            await zapClient.sendMessage(
+              `55${data.clientsData[i].phone?.toString().trim()}@c.us`,
+              format1
+            )
           console.log("Sending message to: " + data.clientsData[i].phone)
         }
 
