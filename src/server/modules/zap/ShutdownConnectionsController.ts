@@ -57,7 +57,7 @@ export class ShutdownConnectionsUseCase {
 
     for (const user of company.users) {
       const directoryPath =
-        "../../../../.wwebjs_auth/session-zapClient-" + user.id
+        "/home/ec2-user/javelyn/.wwebjs_auth/session-zapClient-" + user.id
 
       console.log({ directoryPath })
 
@@ -72,18 +72,16 @@ export class ShutdownConnectionsUseCase {
 
       if (!container.isRegistered("zapClient-" + user.id)) continue
       const zapClient = container.resolve<Client>("zapClient-" + user.id)
-      const clientState = await zapClient.getState()
-
-      console.log(`zapclient-${user.id} |||| state: ${clientState}`)
-      console.log(zapClient.info)
-      console.log(zapClient.pupBrowser)
-      console.log(zapClient.pupPage)
-      if (!zapClient.pupPage || zapClient.pupPage.isClosed() || !clientState) {
-        console.log("skiping zapClient-" + user.id)
-        continue
+      if (zapClient.pupBrowser) {
+        await zapClient.pupBrowser.close()
+        console.log("shutting down pupbrowser for zapClient-" + user.id)
+      } else if (zapClient.pupPage) {
+        await zapClient.pupPage.close()
+        console.log("shutting down puppage for zapClient-" + user.id)
+      } else {
+        console.log("no pup. skipping for zapClient-" + user.id)
       }
-      console.log("shutting down zapClient-" + user.id)
-      await zapClient.destroy()
+
       container.registerInstance<string>("zapClient-" + user.id, "disconnected")
     }
 
