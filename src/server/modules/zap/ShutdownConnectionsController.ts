@@ -61,7 +61,7 @@ export class ShutdownConnectionsUseCase {
     for (const user of company.users) {
       if (!container.isRegistered("zapClient-" + user.id)) continue
       const zapClient = container.resolve<Client>("zapClient-" + user.id)
-      console.log(`zapclient-${user.id} state: ${zapClient.getState()}`)
+      console.log(`zapclient-${user.id} state: ${await zapClient.getState()}`)
       if (!zapClient.pupPage || zapClient.pupPage.isClosed()) {
         console.log("skiping zapClient-" + user.id)
         continue
