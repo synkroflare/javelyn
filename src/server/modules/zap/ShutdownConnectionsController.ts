@@ -91,6 +91,7 @@ export class ShutdownConnectionsUseCase {
         whatsappFreeSlots: company.whatsappSlots,
         users: {
           updateMany: {
+            where: {},
             data: {
               zapStatus: "disconnected",
             },
