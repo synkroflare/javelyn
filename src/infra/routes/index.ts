@@ -4,8 +4,11 @@ import { companyRoutes } from "./company.route"
 import { evaluationRoutes } from "./evaluation.routes"
 import { eventRoutes } from "./event.routes"
 import { groupRoutes } from "./group.routes"
+import { itemRoutes } from "./item.routes"
 import { leadRoutes } from "./lead.routes"
 import { listRoutes } from "./list.routes"
+import { missionRoutes } from "./mission.routes"
+import { petRoutes } from "./pet.routes.ts"
 import { procedureRoutes } from "./procedure.routes"
 import { quoteRoutes } from "./quote.routes"
 import { spreadsheetRoutes } from "./spreadsheet.routes"
@@ -30,5 +33,8 @@ router.use("/task/", taskRoutes)
 router.use("/lead/", leadRoutes)
 router.use("/quote/", quoteRoutes)
 router.use("/evaluation/", evaluationRoutes)
+router.use("/pet/", petRoutes)
+router.use("/mission/", missionRoutes)
+router.use("/item/", itemRoutes)
 
 export { router }

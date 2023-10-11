@@ -257,8 +257,9 @@ model User {
   zapQrcode  String @default("")
   zapStatus  String @default("disconnected")
 
-  company Company @relation(fields: [companyId], references: [id])
+  coins Int @default(0)
 
+  company Company @relation(fields: [companyId], references: [id])
   createdTickets  Ticket[] @relation("creator")
   assignedTickets Ticket[] @relation("assignee")
   createdGroups   Group[]  @relation("creator" )
@@ -271,6 +272,9 @@ model User {
   createdLead     Lead[] @relation(name: "creator")
   assignedLeads   Lead[] @relation(name: "assignee")
   createdEvaluations Evaluation[]
+  missions Mission[]
+  pets Pet[]
+
 
   statusTrashed Boolean  @default(false)
   createdAt     DateTime @default(now())
@@ -454,5 +458,75 @@ model Evaluation {
   statusTrashed Boolean  @default(false)
   createdAt     DateTime @default(now())
   updatedAt     DateTime @default(now())
+}
+
+model Pet {
+  id        Int    @id @default(autoincrement())
+  companyId Int
+  ownerId Int?
+  name     String
+  sprite      String
+  type String
+  level Int
+  hunger Int
+  thirst Int
+  happiness Int
+  exercise Int
+
+  items Item[]
+  owner User?     @relation(fields: [ownerId], references: [id])
+
+  statusTrashed Boolean  @default(false)
+  createdAt     DateTime @default(now())
+}
+
+model BaseItem {
+  id        Int    @id @default(autoincrement())
+  name     String @unique
+  sprite      String
+  type String
+  level Int
+  value Int
+  duration Int?
+  effectType String
+  effectModifier Float?
+  effectSprite String?
+  
+  items Item[]
+
+  statusTrashed Boolean  @default(false)
+  createdAt     DateTime @default(now())
+}
+
+model Item {
+  id        Int    @id @default(autoincrement())
+  holderId  Int?
+  baseItemName     String
+
+  baseItem BaseItem @relation(fields: [baseItemName], references: [name])
+  holder Pet? @relation(fields: [holderId], references: [id])
+
+  statusTrashed Boolean  @default(false)
+  createdAt     DateTime @default(now())
+  usedAt DateTime?
+}
+
+
+
+model Mission {
+  id        Int    @id @default(autoincrement())
+  userId Int
+  name     String
+  briefing String
+  type String
+  level Int
+  reward Int
+  totalObjectives Int
+  remainingObjectives Int
+
+  user User @relation(fields: [userId], references: [id])
+
+  statusTrashed Boolean  @default(false)
+  createdAt     DateTime @default(now())
 }
 
