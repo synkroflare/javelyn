@@ -35,6 +35,7 @@ model Company {
   tasks      Task[]
   quotes     Quote[]
   evaluations Evaluation[]
+  shops Shop[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now())
@@ -501,10 +502,12 @@ model BaseItem {
 model Item {
   id        Int    @id @default(autoincrement())
   holderId  Int?
+  shopId Int?
   baseItemName     String
 
   baseItem BaseItem @relation(fields: [baseItemName], references: [name])
   holder Pet? @relation(fields: [holderId], references: [id])
+  shop Shop? @relation(fields: [shopId], references: [id])
 
   statusTrashed Boolean  @default(false)
   createdAt     DateTime @default(now())
@@ -516,17 +519,42 @@ model Item {
 model Mission {
   id        Int    @id @default(autoincrement())
   userId Int
-  name     String
-  briefing String
-  type String
-  level Int
-  reward Int
-  totalObjectives Int
+  baseMissionName String
   remainingObjectives Int
 
   user User @relation(fields: [userId], references: [id])
+  baseMission BaseMission @relation(fields: [baseMissionName], references: [name])
+
+  statusTrashed Boolean  @default(false)
+  createdAt     DateTime @default(now())
+  doneAt DateTime?
+}
+
+model BaseMission {
+  id        Int    @id @default(autoincrement())
+  name     String @unique
+  title String
+  briefing String  
+  baseLevel Int
+  baseReward Int
+  totalObjectives Int
+
+  missions Mission[]
 
   statusTrashed Boolean  @default(false)
   createdAt     DateTime @default(now())
 }
+
+model Shop {
+  id        Int    @id @default(autoincrement())
+  companyId Int
+
+  company Company @relation(fields: [companyId], references: [id])
+  items Item[]
+
+  statusTrashed Boolean  @default(false)
+  createdAt     DateTime @default(now())
+}
+
+
 
