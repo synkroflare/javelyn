@@ -8,6 +8,7 @@ import { logHandler } from "./infra/logs/logHandler"
 import multer from "multer"
 import cors from "cors"
 import { createLogger } from "winston"
+import { env } from "process"
 
 const app = express()
 // Add headers before the routes are defined
@@ -28,14 +29,9 @@ app.use(express.urlencoded({ limit: "25mb", extended: true }))
 app.use(express.json({ limit: "25mb" }))
 app.use(express.urlencoded({ limit: "25mb", extended: true }))
 
-const logger = createLogger()
-
 app.use((req, res, next) => {
-  const origin = req.get("Origin")
-  if (
-    origin !== "https://javelyn.vercel.app" &&
-    req.ip !== "::ffff:187.39.124.191"
-  ) {
+  const secret = req.get("Secret")
+  if (!secret || secret !== env.JAVELYN_SECRET) {
     console.log(
       "\x1b[31m%s\x1b[0m",
       "FORBIDDEN ORIGIN/ID DETECTED !!!!!!!!!!!!!!!!!!!!"
@@ -44,7 +40,7 @@ app.use((req, res, next) => {
       "\x1b[31m%s\x1b[0m",
       "##################################################"
     )
-    console.log({ origin, ip: req.ip })
+    console.log({ secret, ip: req.ip })
     logHandler(req, "\x1b[31m%s\x1b[0m")
     console.log(
       "\x1b[31m%s\x1b[0m",
@@ -54,8 +50,6 @@ app.use((req, res, next) => {
       "\x1b[31m%s\x1b[0m",
       "##################################################"
     )
-
-    
   }
   logHandler(req, "\x1b[36m%s\x1b[0m")
   next()
