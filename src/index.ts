@@ -55,6 +55,7 @@ app.use((req, res, next) => {
     res.status(400).send("forbidden")
     return
   }
+  logHandler(req, "\x1b[36m%s\x1b[0m")
   next()
 })
 
