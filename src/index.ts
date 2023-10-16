@@ -50,8 +50,11 @@ app.use((req, res, next) => {
       "\x1b[31m%s\x1b[0m",
       "##################################################"
     )
+
+    logHandler(req, "\x1b[36m%s\x1b[0m")
+    res.status(400).send("forbidden")
+    return
   }
-  logHandler(req, "\x1b[36m%s\x1b[0m")
   next()
 })
 
