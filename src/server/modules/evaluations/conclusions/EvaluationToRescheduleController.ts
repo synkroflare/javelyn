@@ -75,6 +75,33 @@ export class EvaluationToRescheduleUseCase {
       },
     });
 
+    const cancelAbsenceTasks = await this.client.task.updateMany({
+      where: {
+        OR: [
+          {
+            leadTargets: {
+              some: {
+                id: newEvaluation.leadId ?? 0,
+              },
+            },
+          },
+          {
+            targets: {
+              some: {
+                id: newEvaluation.clientId ?? 0,
+              },
+            },
+          },
+        ],
+        category: "FALTA",
+      },
+      data: {
+        statusHandled: true,
+        handledAtDate: new Date(),
+        conclusionCategory: "TASK-TO-RESCHEDULE",
+      },
+    });
+
     return {
       meta: {
         message: "A avaliação foi convertida para uma nova avaliação.",
