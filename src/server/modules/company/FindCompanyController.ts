@@ -1,6 +1,6 @@
+import { Company } from "@prisma/client"
 import { Request, Response } from "express"
 import { container, inject, injectable } from "tsyringe"
-import { ICompany } from "../../global/models/ICompany"
 import {
   ICompanyRepository,
   TFindCompanyData,
@@ -32,7 +32,7 @@ export class FindCompanyUseCase {
     private companyRepository: ICompanyRepository
   ) {}
 
-  async execute(data: TFindCompanyData): Promise<ICompany | null> {
+  async execute(data: TFindCompanyData): Promise<Company | null> {
     const readCompany = await this.companyRepository.find(data)
     return readCompany
   }

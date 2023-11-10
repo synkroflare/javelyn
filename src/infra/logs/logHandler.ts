@@ -5,7 +5,7 @@ export const logHandler = async (req: Request, colorCode: string) => {
   if (req.method === "OPTIONS") return
 
   const newLine = `{
-    originalUrl: ${req.originalUrl?.split("?")[0]},
+    endpoint: ${req.originalUrl?.split("?")[0]},
     method: ${req.method},
     body: ${JSON.stringify(req.body)},
     query:  ${JSON.stringify(req.query)},
