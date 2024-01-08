@@ -72,7 +72,9 @@ export class ShutdownConnectionsUseCase {
       const zapClient = container.resolve<Client>("zapClient-" + user.id);
       if (zapClient.pupBrowser) {
         const events = zapClient.eventNames();
-        if (!events.includes("ready")) continue;
+        console.log({ events });
+        if (!events.includes("qr")) continue;
+        console.log("shutting down pupbrowser for zapClient-" + user.id);
         await zapClient.pupBrowser.close();
       } else if (zapClient.pupPage) {
         console.log("shutting down puppage for zapClient-" + user.id);

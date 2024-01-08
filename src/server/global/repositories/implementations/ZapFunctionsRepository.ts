@@ -219,26 +219,6 @@ export class ZapFunctionsRepository implements IZapRepository {
           message
         );
       });
-
-      console.log(`getting qrcode for user:  #${user.id} ${user.name}`);
-
-      const qrCode: string = await new Promise((resolve, reject) => {
-        client.on("qr", async (qr) => {
-          console.log("zapClient-" + user.id + " qr on nmeth");
-          await this.prismaClient.user.update({
-            where: {
-              id: data.userId,
-            },
-            data: {
-              zapQrcode: qr,
-            },
-          });
-          resolve(qr);
-        });
-      });
-
-      console.log(`qrcode acquired for user:  #${user.id} ${user.name}`);
-
       client.on("authenticated", () => {
         console.log("zapClient-" + user.id + " AUTHENTICATED");
       });
@@ -281,6 +261,25 @@ export class ZapFunctionsRepository implements IZapRepository {
           },
         });
       });
+
+      console.log(`getting qrcode for user:  #${user.id} ${user.name}`);
+
+      const qrCode: string = await new Promise((resolve, reject) => {
+        client.on("qr", async (qr) => {
+          console.log("zapClient-" + user.id + " qr on nmeth");
+          await this.prismaClient.user.update({
+            where: {
+              id: data.userId,
+            },
+            data: {
+              zapQrcode: qr,
+            },
+          });
+          resolve(qr);
+        });
+      });
+
+      console.log(`qrcode acquired for user:  #${user.id} ${user.name}`);
 
       return {
         isConnected: false,
