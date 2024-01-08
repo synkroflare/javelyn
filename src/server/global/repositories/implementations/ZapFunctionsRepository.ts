@@ -196,7 +196,6 @@ export class ZapFunctionsRepository implements IZapRepository {
           args: ["--no-sandbox"],
           headless: true,
         },
-        authTimeoutMs: 90000,
       });
       container.registerInstance<Client>("zapClient-" + user.id, client);
       console.log(
