@@ -78,8 +78,9 @@ export class ShutdownConnectionsUseCase {
         console.log("p2");
         await zapClient.pupPage?.close();
         console.log("p3");
-        await zapClient.logout();
+        await zapClient.pupBrowser.disconnect();
         console.log("p4");
+
         await zapClient.pupBrowser.close();
         console.log("p5");
       } else if (zapClient.pupPage) {
