@@ -74,12 +74,14 @@ export class ShutdownConnectionsUseCase {
         console.log("21shutting down pupbrowser for zapClient-" + user.id);
         console.log("p1");
 
-        // await zapClient.logout();
+        //
         console.log("p2");
         await zapClient.pupPage?.close();
         console.log("p3");
-        await zapClient.pupBrowser.close();
+        await zapClient.logout();
         console.log("p4");
+        await zapClient.pupBrowser.close();
+        console.log("p5");
       } else if (zapClient.pupPage) {
         console.log("shutting down puppage for zapClient-" + user.id);
         await zapClient.pupPage.close();
