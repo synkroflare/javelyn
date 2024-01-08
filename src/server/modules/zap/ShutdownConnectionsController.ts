@@ -73,16 +73,6 @@ export class ShutdownConnectionsUseCase {
       if (zapClient.pupBrowser) {
         console.log("21shutting down pupbrowser for zapClient-" + user.id);
         console.log("p1");
-
-        //
-        console.log("p2");
-        await zapClient.pupPage?.close();
-        console.log("p3");
-        await zapClient.pupBrowser.disconnect();
-        console.log("p4");
-
-        await zapClient.destroy();
-        console.log("p5");
         await zapClient.pupBrowser.close();
         console.log("p6");
       } else if (zapClient.pupPage) {
