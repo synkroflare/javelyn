@@ -72,11 +72,11 @@ export class ShutdownConnectionsUseCase {
       const zapClient = container.resolve<Client>("zapClient-" + user.id);
       console.log({ zapClient });
       if (zapClient.pupBrowser) {
-        await zapClient.pupBrowser.close();
         console.log("shutting down pupbrowser for zapClient-" + user.id);
+        await zapClient.pupBrowser.close();
       } else if (zapClient.pupPage) {
-        await zapClient.pupPage.close();
         console.log("shutting down puppage for zapClient-" + user.id);
+        await zapClient.pupPage.close();
       } else {
         console.log("no pup. skipping for zapClient-" + user.id);
       }
