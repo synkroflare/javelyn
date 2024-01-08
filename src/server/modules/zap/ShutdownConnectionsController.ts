@@ -77,6 +77,8 @@ export class ShutdownConnectionsUseCase {
         await zapClient.pupPage?.close();
         console.log("p2");
 
+        console.log({ evs: zapClient.eventNames });
+
         await zapClient.pupBrowser.close();
         console.log("p3");
       } else if (zapClient.pupPage) {
