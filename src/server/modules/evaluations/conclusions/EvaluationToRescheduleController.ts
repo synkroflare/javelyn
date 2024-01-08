@@ -66,7 +66,6 @@ export class EvaluationToRescheduleUseCase {
         handledAtDate: new Date(),
         statusAbsent: true,
         conclusionCategory: "EVALUATION-TO-RESCHEDULE",
-        rescheduled: true,
         rescheduledEvaluation: {
           connect: {
             id: newEvaluation.id,
