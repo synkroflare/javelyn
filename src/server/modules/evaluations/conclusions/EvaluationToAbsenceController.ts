@@ -1,38 +1,33 @@
-import {
-  Client,
-  Evaluation,
-  Lead,
-  PrismaClient,
-  Task,
-  User,
-} from "@prisma/client"
-import { Request, Response } from "express"
-import { JavelynResponse } from "server/modules/leads/CreateLeadController"
-import { container, inject, injectable } from "tsyringe"
+import { Client, Evaluation, Lead, PrismaClient, User } from "@prisma/client";
+import { Request, Response } from "express";
+import { JavelynResponse } from "server/modules/leads/CreateLeadController";
+import { container, inject, injectable } from "tsyringe";
 
 type TRequest = {
   evaluation: {
     data: Evaluation & {
-      lead?: Lead
-      client?: Client
-      creator?: User
-    }
-    include?: any
-    skip?: any
-    take?: any
-  }
-}
+      lead?: Lead;
+      client?: Client;
+      creator?: User;
+    };
+    include?: any;
+    skip?: any;
+    take?: any;
+  };
+};
 
 export class EvaluationToAbsenceController {
   async handle(request: Request, response: Response): Promise<Response> {
     try {
-      const data = request.body
+      const data = request.body;
       const evaluationToAbsenceUseCase = container.resolve(
         EvaluationToAbsenceUseCase
-      )
-      const evaluationToAbsence = await evaluationToAbsenceUseCase.execute(data)
+      );
+      const evaluationToAbsence = await evaluationToAbsenceUseCase.execute(
+        data
+      );
 
-      return response.status(201).json(evaluationToAbsence)
+      return response.status(201).json(evaluationToAbsence);
     } catch (error: any) {
       return response.status(400).send({
         meta: {
@@ -40,7 +35,7 @@ export class EvaluationToAbsenceController {
           status: 400,
         },
         objects: null,
-      })
+      });
     }
   }
 }
@@ -54,7 +49,7 @@ export class EvaluationToAbsenceUseCase {
 
   async execute(data: TRequest): Promise<JavelynResponse> {
     if (!data.evaluation || !data.evaluation?.data?.id)
-      throw new Error("Erro: dados insuficientes.")
+      throw new Error("Erro: dados insuficientes.");
 
     const evaluation =
       (data.evaluation.data.lead || data.evaluation.data.client) &&
@@ -83,7 +78,7 @@ export class EvaluationToAbsenceUseCase {
                 },
               },
             },
-          })
+          });
     if (!evaluation)
       return {
         meta: {
@@ -91,8 +86,8 @@ export class EvaluationToAbsenceUseCase {
           status: 400,
         },
         objects: null,
-      }
-    const targetId = evaluation.leadId ?? evaluation.clientId
+      };
+    const targetId = evaluation.leadId ?? evaluation.clientId;
 
     if (!targetId)
       return {
@@ -101,13 +96,13 @@ export class EvaluationToAbsenceUseCase {
           status: 400,
         },
         objects: null,
-      }
+      };
 
-    const targetName = evaluation.lead?.name ?? evaluation.client?.name
-    const targetType = evaluation.lead ? "leadTargets" : "targets"
+    const targetName = evaluation.lead?.name ?? evaluation.client?.name;
+    const targetType = evaluation.lead ? "leadTargets" : "targets";
 
-    const taskDate = new Date()
-    taskDate.setDate(taskDate.getDate() + 1)
+    const taskDate = new Date();
+    taskDate.setDate(taskDate.getDate() + 1);
 
     const targetUpdate = evaluation.lead
       ? this.client.lead.updateMany({
@@ -130,7 +125,7 @@ export class EvaluationToAbsenceUseCase {
               increment: 1,
             },
           },
-        })
+        });
 
     const prismaOps = await this.client.$transaction([
       this.client.evaluation.update({
@@ -163,7 +158,7 @@ export class EvaluationToAbsenceUseCase {
           },
         },
       }),
-    ])
+    ]);
 
     return {
       meta: {
@@ -172,6 +167,6 @@ export class EvaluationToAbsenceUseCase {
         status: 200,
       },
       objects: prismaOps,
-    }
+    };
   }
 }

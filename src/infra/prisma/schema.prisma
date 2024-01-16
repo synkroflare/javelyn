@@ -24,18 +24,18 @@ model Company {
 
   statusTrashed Boolean @default(false)
 
-  clients    Client[]
-  leads      Lead[]
-  users      User[]
-  tickets    Ticket[]
-  procedures Procedure[]
-  groups     Group[]
-  lists      List[]
-  events     Event[]
-  tasks      Task[]
-  quotes     Quote[]
+  clients     Client[]
+  leads       Lead[]
+  users       User[]
+  tickets     Ticket[]
+  procedures  Procedure[]
+  groups      Group[]
+  lists       List[]
+  events      Event[]
+  tasks       Task[]
+  quotes      Quote[]
   evaluations Evaluation[]
-  shops Shop[]
+  shops       Shop[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now())
@@ -51,7 +51,7 @@ model Ticket {
   proceduresData  Json?
   clientId        Int?
   evaluationId    Int?
-  taskId         Int?
+  taskId          Int?
   clientName      String
   clientCPF       String?
   companyId       Int
@@ -79,7 +79,6 @@ model Ticket {
   assignedUser                User?       @relation(name: "assignee", fields: [assignedUserId], references: [id])
   company                     Company     @relation(fields: [companyId], references: [id])
 
-
   trashedReason String @default("")
 
   statusPostponed            Boolean @default(false)
@@ -97,24 +96,24 @@ model Ticket {
 }
 
 model Lead {
-  id                Int     @id @default(autoincrement())
-  uuid              String? @default(uuid())
-  companyId         Int
-  creatorId         Int
+  id         Int     @id @default(autoincrement())
+  uuid       String? @default(uuid())
+  companyId  Int
+  creatorId  Int
   assigneeId Int?
-  clientId          Int? @unique
-  name              String
-  CPF               String? 
-  phone             String
-  mail              String?  
-  absences            Int   @default(0)
+  clientId   Int?    @unique
+  name       String
+  CPF        String?
+  phone      String
+  mail       String?
+  absences   Int     @default(0)
 
-  leadAdIdentifer   String?
-  leadStatus        String
+  leadAdIdentifer    String?
+  leadStatus         String
   leadEvaluationDate DateTime?
   leadObservation    String?
   leadType           String
-  leadRank           String  
+  leadRank           String
 
   age           Int?
   neighborhood  String?
@@ -126,21 +125,22 @@ model Lead {
   birthdayDay   Int?
   birthdayMonth Int?
   birthdayYear  Int?
-  
-  events          Event[]
-  targetedThrows  Throw[]
-  targetedTasks   Task[]
-  assignedQuotes  Quote[]
-  evaluations Evaluation[]
-  creator         User     @relation(name: "creator",fields: [creatorId], references: [id])
-  assignee        User?    @relation(name:"assignee",fields: [assigneeId], references: [id])
-  company         Company  @relation(fields: [companyId], references: [id])
-  client         Client?  @relation(fields: [clientId], references: [id])
 
-  statusTrashed           Boolean @default(false)
-  trashedReason           String  @default("")
-  statusActive            Boolean @default(false)
-  statusConverted         Boolean @default(false)
+  events         Event[]
+  targetedThrows Throw[]
+  targetedTasks  Task[]
+  assignedQuotes Quote[]
+  evaluations    Evaluation[]
+  creator        User         @relation(name: "creator", fields: [creatorId], references: [id])
+  assignee       User?        @relation(name: "assignee", fields: [assigneeId], references: [id])
+  company        Company      @relation(fields: [companyId], references: [id])
+  client         Client?      @relation(fields: [clientId], references: [id])
+
+  statusRescue        Boolean @default(false)
+  statusTrashed       Boolean @default(false)
+  trashedReason       String  @default("")
+  statusActive        Boolean @default(false)
+  isConvertedToClient Boolean @default(false)
 
   javelynEntryDates DateTime[]
   flexusEntryDates  DateTime[]
@@ -159,17 +159,16 @@ model Client {
   companyId         Int
   responsibleUserId Int?
   name              String
-  CPF               String? 
+  CPF               String?
   phone             String?
   mail              String?
   rank              Int     @default(50)
   rankName          String?
 
-  leadAdIdentifer   String?
-  leadStatus        String?
+  leadAdIdentifer    String?
+  leadStatus         String?
   leadEvaluationDate DateTime?
   leadObservation    String?
-
 
   age           Int?
   neighborhood  String?
@@ -196,18 +195,18 @@ model Client {
   procedureTotalCount         Int    @default(0)
   procedureType               String @default("PADRÃO")
 
-  lead Lead?
+  lead            Lead?
   tickets         Ticket[]
   groups          Group[]
-  sentLists       List[]   @relation(name: "sent")
-  pendingLists    List[]   @relation(name: "pending")
-  responsibleUser User?    @relation(fields: [responsibleUserId], references: [id])
+  sentLists       List[]       @relation(name: "sent")
+  pendingLists    List[]       @relation(name: "pending")
+  responsibleUser User?        @relation(fields: [responsibleUserId], references: [id])
   events          Event[]
   targetedThrows  Throw[]
   targetedTasks   Task[]
   assignedQuotes  Quote[]
-    evaluations Evaluation[]
-  company         Company  @relation(fields: [companyId], references: [id])
+  evaluations     Evaluation[]
+  company         Company      @relation(fields: [companyId], references: [id])
 
   statusTrashed           Boolean @default(false)
   trashedReason           String  @default("")
@@ -237,8 +236,8 @@ model Procedure {
 
   ticket                  Ticket[]
   ticketAvailableToReturn Ticket[] @relation(name: "availableToReturn")
-  quotes                  Quote[] 
-  openQuotes               Quote[] @relation(name: "openProcedures")
+  quotes                  Quote[]
+  openQuotes              Quote[]  @relation(name: "openProcedures")
   company                 Company  @relation(fields: [companyId], references: [id])
 
   statusTrashed Boolean  @default(false)
@@ -260,22 +259,21 @@ model User {
 
   coins Int @default(0)
 
-  company Company @relation(fields: [companyId], references: [id])
-  createdTickets  Ticket[] @relation("creator")
-  assignedTickets Ticket[] @relation("assignee")
-  createdGroups   Group[]  @relation("creator" )
-  assignedGroups Group[] @relation("assigned")
-  createdLists    List[]
-  throws          Throw[]
-  clients         Client[]
-  tasks           Task[]
-  createdQuotes   Quote[]
-  createdLead     Lead[] @relation(name: "creator")
-  assignedLeads   Lead[] @relation(name: "assignee")
+  company            Company      @relation(fields: [companyId], references: [id])
+  createdTickets     Ticket[]     @relation("creator")
+  assignedTickets    Ticket[]     @relation("assignee")
+  createdGroups      Group[]      @relation("creator")
+  assignedGroups     Group[]      @relation("assigned")
+  createdLists       List[]
+  throws             Throw[]
+  clients            Client[]
+  tasks              Task[]
+  createdQuotes      Quote[]
+  createdLead        Lead[]       @relation(name: "creator")
+  assignedLeads      Lead[]       @relation(name: "assignee")
   createdEvaluations Evaluation[]
-  missions Mission[]
-  pets Pet[]
-
+  missions           Mission[]
+  pets               Pet[]
 
   statusTrashed Boolean  @default(false)
   createdAt     DateTime @default(now())
@@ -301,10 +299,10 @@ model Group {
   updatedAt DateTime  @default(now())
   trashedAt DateTime?
 
-  clients Client[]
-  company Company  @relation(fields: [companyId], references: [id])
-  creator User     @relation(name:"creator",fields: [creatorId], references: [id])
-  assignedUsers User[] @relation(name:"assigned")
+  clients       Client[]
+  company       Company  @relation(fields: [companyId], references: [id])
+  creator       User     @relation(name: "creator", fields: [creatorId], references: [id])
+  assignedUsers User[]   @relation(name: "assigned")
 }
 
 model List {
@@ -350,17 +348,17 @@ model Event {
   handledAt DateTime?
   trashedAt DateTime?
 
-  targets Client[]
+  targets     Client[]
   leadTargets Lead[]
-  company Company  @relation(fields: [companyId], references: [id])
+  company     Company  @relation(fields: [companyId], references: [id])
 }
 
 model Throw {
-  id         Int    @id @default(autoincrement())
-  companyId  Int
-  targetsIds Int[]
-  creatorId  Int
-  body       String
+  id          Int      @id @default(autoincrement())
+  companyId   Int
+  targetsIds  Int[]
+  creatorId   Int
+  body        String
   targets     Client[]
   leadTargets Lead[]
   creatorUser User     @relation(fields: [creatorId], references: [id])
@@ -370,129 +368,129 @@ model Throw {
 }
 
 model Task {
-  id        Int    @id @default(autoincrement())
-  companyId Int
-  creatorId Int
-  title     String
-  body      String
-  conclusion String @default("Nenhuma conclusão definida.")
+  id                 Int    @id @default(autoincrement())
+  companyId          Int
+  creatorId          Int
+  title              String
+  body               String
+  conclusion         String @default("Nenhuma conclusão definida.")
   conclusionCategory String @default("INDEFINIDO")
-  rating     Int     @default(5)
-  category  String    @default("LEAD")
+  rating             Int    @default(5)
+  category           String @default("LEAD")
 
   targets     Client[]
   leadTargets Lead[]
   quotes      Quote[]
   creatorUser User     @relation(fields: [creatorId], references: [id])
-  company     Company   @relation(fields: [companyId], references: [id])
+  company     Company  @relation(fields: [companyId], references: [id])
 
-  statusHandled Boolean  @default(false)
-  statusTrashed Boolean  @default(false)
-  createdAt     DateTime @default(now())
+  statusHandled Boolean   @default(false)
+  statusTrashed Boolean   @default(false)
+  createdAt     DateTime  @default(now())
   targetDate    DateTime
   handledAtDate DateTime?
 }
 
 model Quote {
-  id        Int    @id @default(autoincrement())
-  companyId Int
-  creatorId Int
-  clientId  Int?
-  leadId    Int?
-  ticketId  Int?
+  id            Int     @id @default(autoincrement())
+  companyId     Int
+  creatorId     Int
+  clientId      Int?
+  leadId        Int?
+  ticketId      Int?
   isClientQuote Boolean @default(true)
-  isLeadQuote Boolean @default(false)
+  isLeadQuote   Boolean @default(false)
 
-  quoteRank String @default("MEDIO")
+  quoteRank   String  @default("MEDIO")
   observation String?
-  value Int @default(0)
-  
-  procedures Procedure[] 
-  openProcedures Procedure[] @relation(name: "openProcedures")
-  ticket     Ticket?     @relation(fields: [ticketId], references: [id])
-  tasks     Task[]
-  proceduresData    Json
-  company           Company  @relation(fields: [companyId],references: [id])
-  creator           User   @relation(fields: [creatorId], references: [id])
-  client            Client? @relation(fields: [clientId], references: [id])
-  lead              Lead?   @relation(fields: [leadId], references: [id])
+  value       Int     @default(0)
 
-  targetDate    DateTime?
-  handledAtDate DateTime?
-  statusAbsent  Boolean  @default(false)
-  statusAccomplished Boolean  @default(false)
-  statusTrashed Boolean  @default(false)
-  trashedReason String @default("INDEFINIDO")
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @default(now())
+  procedures     Procedure[]
+  openProcedures Procedure[] @relation(name: "openProcedures")
+  ticket         Ticket?     @relation(fields: [ticketId], references: [id])
+  tasks          Task[]
+  proceduresData Json
+  company        Company     @relation(fields: [companyId], references: [id])
+  creator        User        @relation(fields: [creatorId], references: [id])
+  client         Client?     @relation(fields: [clientId], references: [id])
+  lead           Lead?       @relation(fields: [leadId], references: [id])
+
+  targetDate         DateTime?
+  handledAtDate      DateTime?
+  statusAbsent       Boolean   @default(false)
+  statusAccomplished Boolean   @default(false)
+  statusTrashed      Boolean   @default(false)
+  trashedReason      String    @default("INDEFINIDO")
+  createdAt          DateTime  @default(now())
+  updatedAt          DateTime  @default(now())
 }
 
 model Evaluation {
-  id        Int    @id @default(autoincrement())
-  companyId Int
-  creatorId Int
-  clientId  Int?
-  leadId    Int?
-  quoteId   Int?
-  ticketId  Int?
+  id                      Int     @id @default(autoincrement())
+  companyId               Int
+  creatorId               Int
+  clientId                Int?
+  leadId                  Int?
+  quoteId                 Int?
+  ticketId                Int?
   rescheduledEvaluationId Int?
-  isClientEvaluation Boolean @default(true)
-  isLeadEvaluation Boolean @default(false)
+  isClientEvaluation      Boolean @default(true)
+  isLeadEvaluation        Boolean @default(false)
 
   evaluationPotential String
-  observation String?
-  duration Int @default(15)
-  rescheduled Boolean @default(false)
-  conclusionCategory String @default("INDEFINIDO")
-  
-  company           Company  @relation(fields: [companyId],references: [id])
-  creator           User   @relation(fields: [creatorId], references: [id])
-  client            Client? @relation(fields: [clientId], references: [id])
-  lead              Lead?   @relation(fields: [leadId], references: [id])
-  rescheduledEvaluation Evaluation? @relation(fields: [rescheduledEvaluationId], references: [id], name: "rescheduledEvaluation")
-  rescheduledFrom Evaluation[] @relation( name: "rescheduledEvaluation")
+  observation         String?
+  duration            Int     @default(15)
+  rescheduled         Boolean @default(false)
+  conclusionCategory  String  @default("INDEFINIDO")
 
-  targetDate    DateTime?
-  handledAtDate DateTime?
-  statusAbsent  Boolean  @default(false)
-  statusAccomplished Boolean  @default(false)
-  statusTrashed Boolean  @default(false)
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @default(now())
+  company               Company      @relation(fields: [companyId], references: [id])
+  creator               User         @relation(fields: [creatorId], references: [id])
+  client                Client?      @relation(fields: [clientId], references: [id])
+  lead                  Lead?        @relation(fields: [leadId], references: [id])
+  rescheduledEvaluation Evaluation?  @relation(fields: [rescheduledEvaluationId], references: [id], name: "rescheduledEvaluation")
+  rescheduledFrom       Evaluation[] @relation(name: "rescheduledEvaluation")
+
+  targetDate         DateTime?
+  handledAtDate      DateTime?
+  statusAbsent       Boolean   @default(false)
+  statusAccomplished Boolean   @default(false)
+  statusTrashed      Boolean   @default(false)
+  createdAt          DateTime  @default(now())
+  updatedAt          DateTime  @default(now())
 }
 
 model Pet {
   id        Int    @id @default(autoincrement())
   companyId Int
-  ownerId Int?
-  name     String
-  sprite      String
-  type String
-  level Int
-  hunger Int
-  thirst Int
+  ownerId   Int?
+  name      String
+  sprite    String
+  type      String
+  level     Int
+  hunger    Int
+  thirst    Int
   happiness Int
-  exercise Int
+  exercise  Int
 
   items Item[]
-  owner User?     @relation(fields: [ownerId], references: [id])
+  owner User?  @relation(fields: [ownerId], references: [id])
 
   statusTrashed Boolean  @default(false)
   createdAt     DateTime @default(now())
 }
 
 model BaseItem {
-  id        Int    @id @default(autoincrement())
-  name     String @unique
-  sprite      String
-  type String
-  level Int
-  value Int
-  duration Int?
-  effectType String
+  id             Int     @id @default(autoincrement())
+  name           String  @unique
+  sprite         String
+  type           String
+  level          Int
+  value          Int
+  duration       Int?
+  effectType     String
   effectModifier Float?
-  effectSprite String?
-  
+  effectSprite   String?
+
   items Item[]
 
   statusTrashed Boolean  @default(false)
@@ -500,43 +498,41 @@ model BaseItem {
 }
 
 model Item {
-  id        Int    @id @default(autoincrement())
-  holderId  Int?
-  shopId Int?
-  baseItemName     String
+  id           Int    @id @default(autoincrement())
+  holderId     Int?
+  shopId       Int?
+  baseItemName String
 
   baseItem BaseItem @relation(fields: [baseItemName], references: [name])
-  holder Pet? @relation(fields: [holderId], references: [id])
-  shop Shop? @relation(fields: [shopId], references: [id])
+  holder   Pet?     @relation(fields: [holderId], references: [id])
+  shop     Shop?    @relation(fields: [shopId], references: [id])
 
-  statusTrashed Boolean  @default(false)
-  createdAt     DateTime @default(now())
-  usedAt DateTime?
+  statusTrashed Boolean   @default(false)
+  createdAt     DateTime  @default(now())
+  usedAt        DateTime?
 }
 
-
-
 model Mission {
-  id        Int    @id @default(autoincrement())
-  userId Int
-  baseMissionName String
+  id                  Int    @id @default(autoincrement())
+  userId              Int
+  baseMissionName     String
   remainingObjectives Int
 
-  user User @relation(fields: [userId], references: [id])
+  user        User        @relation(fields: [userId], references: [id])
   baseMission BaseMission @relation(fields: [baseMissionName], references: [name])
 
-  statusTrashed Boolean  @default(false)
-  createdAt     DateTime @default(now())
-  doneAt DateTime?
+  statusTrashed Boolean   @default(false)
+  createdAt     DateTime  @default(now())
+  doneAt        DateTime?
 }
 
 model BaseMission {
-  id        Int    @id @default(autoincrement())
-  name     String @unique
-  title String
-  briefing String  
-  baseLevel Int
-  baseReward Int
+  id              Int    @id @default(autoincrement())
+  name            String @unique
+  title           String
+  briefing        String
+  baseLevel       Int
+  baseReward      Int
   totalObjectives Int
 
   missions Mission[]
@@ -546,15 +542,12 @@ model BaseMission {
 }
 
 model Shop {
-  id        Int    @id @default(autoincrement())
+  id        Int @id @default(autoincrement())
   companyId Int
 
   company Company @relation(fields: [companyId], references: [id])
-  items Item[]
+  items   Item[]
 
   statusTrashed Boolean  @default(false)
   createdAt     DateTime @default(now())
 }
-
-
-
