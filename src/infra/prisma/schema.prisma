@@ -138,6 +138,7 @@ model Lead {
 
   statusRescue        Boolean @default(false)
   statusTrashed       Boolean @default(false)
+  observation         String?
   trashedReason       String  @default("")
   statusActive        Boolean @default(false)
   isConvertedToClient Boolean @default(false)

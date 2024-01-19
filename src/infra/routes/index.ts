@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { clientRoutes } from "./client.routes";
 import { companyRoutes } from "./company.route";
-import { dataRoutes } from "./data;routes";
+import { dataRoutes } from "./data.routes";
 import { evaluationRoutes } from "./evaluation.routes";
 import { eventRoutes } from "./event.routes";
 import { groupRoutes } from "./group.routes";

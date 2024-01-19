@@ -1,18 +1,18 @@
 import { PrismaClient } from "@prisma/client";
 import { Request, Response } from "express";
 import { container, inject, injectable } from "tsyringe";
-import { JavelynResponse } from "../../../server/modules/leads/CreateLeadController";
+import { JavelynResponse } from "../leads/CreateLeadController";
 
 type TRequest = {
   companyId: number;
 };
 
-export class GetRescuePanelDataController {
+export class GetLeadRescuePanelDataController {
   async handle(request: Request, response: Response): Promise<Response> {
     try {
       const data = request.body;
       const evaluationToAbsenceUseCase = container.resolve(
-        GetRescuePanelDataUseCase
+        GetLeadRescuePanelDataUseCase
       );
       const evaluationToAbsence = await evaluationToAbsenceUseCase.execute(
         data
@@ -32,7 +32,7 @@ export class GetRescuePanelDataController {
 }
 
 @injectable()
-export class GetRescuePanelDataUseCase {
+export class GetLeadRescuePanelDataUseCase {
   constructor(
     @inject("PrismaClient")
     private readonly prismaClient: PrismaClient
@@ -47,7 +47,6 @@ export class GetRescuePanelDataUseCase {
         },
         objects: [],
       };
-
     const rescueLeads = await this.prismaClient.lead.findMany({
       where: {
         companyId,
@@ -55,9 +54,14 @@ export class GetRescuePanelDataUseCase {
         statusTrashed: false,
         isConvertedToClient: false,
       },
-      select: {
-        id: true,
-        trashedReason: true,
+      include: {
+        targetedTasks: true,
+        creator: {
+          select: {
+            name: true,
+            id: true,
+          },
+        },
       },
     });
 
@@ -73,40 +77,40 @@ export class GetRescuePanelDataUseCase {
     const leadsProblem = rescueLeads.filter(
       (l) => l.trashedReason === "LEAD PROBLEMATICO"
     );
-    const leadsOther = rescueLeads.filter((l) => l.trashedReason === "OUTRO");
+    const others = rescueLeads.filter((l) => l.trashedReason === "OUTRO");
 
-    const activeDateTreshold = new Date();
-    activeDateTreshold.setMonth(activeDateTreshold.getMonth() - 6);
-
-    const inactiveClients = await this.prismaClient.client.findMany({
+    const leadsWithoutTask = await this.prismaClient.lead.findMany({
       where: {
         companyId,
-        tickets: {
-          every: {
-            doneDate: {
-              lt: activeDateTreshold,
+        isConvertedToClient: false,
+        statusTrashed: false,
+        OR: [
+          {
+            targetedTasks: {
+              none: {
+                id: {
+                  gt: 0,
+                },
+              },
             },
           },
+          {
+            targetedTasks: {
+              every: {
+                statusHandled: true,
+              },
+            },
+          },
+        ],
+      },
+      include: {
+        targetedTasks: true,
+        creator: {
+          select: {
+            name: true,
+            id: true,
+          },
         },
-      },
-      select: {
-        id: true,
-      },
-    });
-
-    const activeQuoteDateTreshold = new Date();
-    activeQuoteDateTreshold.setMonth(activeQuoteDateTreshold.getMonth() - 1);
-
-    const rescueQuotes = await this.prismaClient.quote.findMany({
-      where: {
-        companyId,
-        createdAt: {
-          lt: activeQuoteDateTreshold,
-        },
-        statusAccomplished: false,
-      },
-      select: {
-        id: true,
       },
     });
 
@@ -116,16 +120,14 @@ export class GetRescuePanelDataUseCase {
         message: "OK",
       },
       objects: {
-        leads: {
-          withoutAnswer: leadsWithoutAnswer.length,
-          withoutInterest: leadsWithoutInterest.length,
-          counter: leadsCounter.length,
-          problem: leadsProblem.length,
-          other: leadsOther.length,
-          all: rescueLeads.length,
-        },
-        inactiveClients: inactiveClients.length,
-        rescueQuotes: rescueQuotes.length,
+        leadsWithoutAnswer,
+        leadsWithoutInterest,
+        leadsCounter,
+        leadsProblem,
+        others,
+        all: rescueLeads,
+
+        leadsWithoutTask,
       },
     };
   }

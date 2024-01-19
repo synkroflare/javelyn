@@ -1,7 +1,7 @@
 import { Client, Evaluation, Lead, PrismaClient, User } from "@prisma/client";
 import { Request, Response } from "express";
-import { JavelynResponse } from "server/modules/leads/CreateLeadController";
 import { container, inject, injectable } from "tsyringe";
+import { JavelynResponse } from "../../../../server/modules/leads/CreateLeadController";
 
 type TRequest = {
   evaluation: {
