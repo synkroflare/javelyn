@@ -1,46 +1,46 @@
-import { Ticket, Lead, PrismaClient, Task, Quote, Client } from "@prisma/client"
-import { Request, Response } from "express"
-import { JavelynResponse } from "server/modules/leads/CreateLeadController"
-import { container, inject, injectable } from "tsyringe"
+import { Client, PrismaClient, Quote } from "@prisma/client";
+import { Request, Response } from "express";
+import { container, inject, injectable } from "tsyringe";
+import { JavelynResponse } from "../../../../server/modules/leads/CreateLeadController";
 
 type TRequest = {
-  quotes: Quote[]
+  quotes: Quote[];
   ticket: {
-    data: any
-    include?: any
-    skip?: any
-    take?: any
-  }
+    data: any;
+    include?: any;
+    skip?: any;
+    take?: any;
+  };
   lead: {
-    where: {}
-    data: {}
-  }
+    where: {};
+    data: {};
+  };
   client: {
-    where: {}
-    create: Client
-    update: Client
-    include?: any
-    skip?: any
-    take?: any
-  }
+    where: {};
+    create: Client;
+    update: Client;
+    include?: any;
+    skip?: any;
+    take?: any;
+  };
   extra: {
-    observation: string
-    userId: number
-    userName: string
-    companyId: number
-    taskDate: Date
-    returnTaskMap: Map<Date, any>
-  }
-}
+    observation: string;
+    userId: number;
+    userName: string;
+    companyId: number;
+    taskDate: Date;
+    returnTaskMap: Map<Date, any>;
+  };
+};
 
 export class QuoteToTicketController {
   async handle(request: Request, response: Response): Promise<Response> {
     try {
-      const data = request.body
-      const taskToTicketUseCase = container.resolve(TaskToTicketUseCase)
-      const taskToTicket = await taskToTicketUseCase.execute(data)
+      const data = request.body;
+      const taskToTicketUseCase = container.resolve(TaskToTicketUseCase);
+      const taskToTicket = await taskToTicketUseCase.execute(data);
 
-      return response.status(201).json(taskToTicket)
+      return response.status(201).json(taskToTicket);
     } catch (error: any) {
       return response.status(400).send({
         meta: {
@@ -48,7 +48,7 @@ export class QuoteToTicketController {
           status: 400,
         },
         objects: null,
-      })
+      });
     }
   }
 }
@@ -62,7 +62,7 @@ export class TaskToTicketUseCase {
 
   async execute(data: TRequest): Promise<JavelynResponse> {
     if (!data.quotes || !data.ticket || !data.client)
-      throw new Error("Erro: dados insuficientes.")
+      throw new Error("Erro: dados insuficientes.");
     const quotes = await this.client.quote.findMany({
       where: {
         id: {
@@ -74,11 +74,11 @@ export class TaskToTicketUseCase {
         client: true,
         lead: true,
       },
-    })
+    });
     if (!quotes || quotes.length === 0)
-      throw new Error("ERRO: não foi possível nenhum orçamento.")
+      throw new Error("ERRO: não foi possível nenhum orçamento.");
 
-    const prismaPromises: any[] = []
+    const prismaPromises: any[] = [];
 
     for (const quote of quotes) {
       if (quote.lead) {
@@ -87,17 +87,17 @@ export class TaskToTicketUseCase {
             id: quote.lead.id,
           },
           data: {
-            statusConverted: true,
+            isConvertedToClient: true,
           },
-        })
-        prismaPromises.push(updateLead)
-        break
+        });
+        prismaPromises.push(updateLead);
+        break;
       }
     }
 
     const taskIds = quotes
       .map((quote) => quote.tasks.map((task) => task.id))
-      .flat()
+      .flat();
 
     const updateTasks = this.client.task.updateMany({
       where: {
@@ -112,9 +112,9 @@ export class TaskToTicketUseCase {
         conclusion:
           "Esta tarefa foi finalizada automáticamente devido à venda realizada.",
       },
-    })
+    });
 
-    prismaPromises.push(updateTasks)
+    prismaPromises.push(updateTasks);
 
     const updateQuotes = this.client.quote.updateMany({
       where: {
@@ -126,10 +126,10 @@ export class TaskToTicketUseCase {
         statusAccomplished: true,
         statusAbsent: false,
       },
-    })
-    prismaPromises.push(updateQuotes)
+    });
+    prismaPromises.push(updateQuotes);
 
-    const client = await this.client.client.upsert(data.client)
+    const client = await this.client.client.upsert(data.client);
     const ticket = await this.client.ticket.create({
       data: {
         ...data.ticket.data,
@@ -139,7 +139,7 @@ export class TaskToTicketUseCase {
       include: {
         procedures: true,
       },
-    })
+    });
 
     const afterSellTask = this.client.task.create({
       data: {
@@ -153,8 +153,8 @@ export class TaskToTicketUseCase {
           connect: [{ id: client.id }],
         },
       },
-    })
-    prismaPromises.push(afterSellTask)
+    });
+    prismaPromises.push(afterSellTask);
 
     for (const [key, procedures] of data.extra.returnTaskMap) {
       const returnTask = this.client.task.create({
@@ -177,12 +177,12 @@ export class TaskToTicketUseCase {
           },
           targetDate: new Date(key),
         },
-      })
+      });
 
-      prismaPromises.push(returnTask)
+      prismaPromises.push(returnTask);
     }
 
-    await this.client.$transaction(prismaPromises)
+    await this.client.$transaction(prismaPromises);
 
     return {
       meta: {
@@ -190,6 +190,6 @@ export class TaskToTicketUseCase {
         status: 200,
       },
       objects: [{ client }, { ticket }, { updateQuotes }],
-    }
+    };
   }
 }

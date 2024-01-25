@@ -59,6 +59,23 @@ export class GetQuoteRescuePanelDataUseCase {
         statusAccomplished: false,
         statusTrashed: false,
       },
+      include: {
+        creator: {
+          select: {
+            name: true,
+          },
+        },
+        client: {
+          select: {
+            name: true,
+          },
+        },
+        lead: {
+          select: {
+            name: true,
+          },
+        },
+      },
     });
 
     const quotesWithoutTasks = await this.prismaClient.quote.findMany({
@@ -84,6 +101,23 @@ export class GetQuoteRescuePanelDataUseCase {
             },
           },
         ],
+      },
+      include: {
+        creator: {
+          select: {
+            name: true,
+          },
+        },
+        client: {
+          select: {
+            name: true,
+          },
+        },
+        lead: {
+          select: {
+            name: true,
+          },
+        },
       },
     });
 

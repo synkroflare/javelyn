@@ -104,6 +104,7 @@ export class GetRescuePanelDataUseCase {
           lt: activeQuoteDateTreshold,
         },
         statusAccomplished: false,
+        statusTrashed: false,
       },
       select: {
         id: true,
