@@ -6,6 +6,7 @@ import multer from "multer";
 import { env } from "process";
 import "reflect-metadata";
 import { startContainers } from "./infra/container";
+import { handleSocketContainer } from "./infra/container/socket";
 import { logHandler } from "./infra/logs/logHandler";
 import { router } from "./infra/routes";
 
@@ -71,7 +72,7 @@ const options = {
     "../../../etc/letsencrypt/live/javelyn.link/fullchain.pem"
   ),
 };
-https
+const server = https
   .createServer(options, app)
   .listen(8080, () =>
     console.log(
@@ -79,3 +80,5 @@ https
         process.version
     )
   );
+
+handleSocketContainer(server);

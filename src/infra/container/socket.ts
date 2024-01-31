@@ -2,7 +2,7 @@ import { Server } from "socket.io";
 import { container } from "tsyringe";
 import { Client } from "whatsapp-web.js";
 
-export const handleSocketContainer = () => {
+export const handleSocketContainer = (server: any) => {
   const io = new Server({
     cors: {
       origin: ["http://localhost:3000", "https://javelyn.vercel.app"],
@@ -42,13 +42,7 @@ export const handleSocketContainer = () => {
       io.to(`ws-solo-room-${userId}`).emit("client-disconnected");
     }
     if (state === "CONNECTED") {
-      let name: string | undefined;
-      if (client && typeof client !== "string") {
-        name = client.info.pushname;
-      }
-      io.to(`ws-solo-room-${userId}`).emit("client-ready", {
-        name,
-      });
+      io.to(`ws-solo-room-${userId}`).emit("client-ready");
     }
 
     if (!state) {
@@ -63,5 +57,5 @@ export const handleSocketContainer = () => {
     });
   });
 
-  io.listen(8081);
+  io.listen(server);
 };

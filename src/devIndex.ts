@@ -3,6 +3,7 @@ import express from "express";
 import multer from "multer";
 import "reflect-metadata";
 import { startContainers } from "./infra/container";
+import { handleSocketContainer } from "./infra/container/socket";
 import { logHandler } from "./infra/logs/logHandler";
 import { router } from "./infra/routes";
 
@@ -39,9 +40,11 @@ app.use(router);
 
 startContainers();
 
-app.listen(8080, () =>
+const server = app.listen(8080, () =>
   console.log(
     "Javelyn v0.0.4 https server online on 8080 and using node version " +
       process.version
   )
 );
+
+handleSocketContainer(server);
