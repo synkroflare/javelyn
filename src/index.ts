@@ -10,7 +10,6 @@ import { logHandler } from "./infra/logs/logHandler";
 import { router } from "./infra/routes";
 
 const app = express();
-// Add headers before the routes are defined
 
 const allowedOrigins = ["http://localhost:3000", "https://javelyn.vercel.app"]; // Substitua pelos seus valores
 

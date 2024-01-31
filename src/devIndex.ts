@@ -6,6 +6,11 @@ import { startContainers } from "./infra/container";
 import { logHandler } from "./infra/logs/logHandler";
 import { router } from "./infra/routes";
 
+process.on("uncaughtException", (err) => {
+  console.error("\x1b[31m%s\x1b[0m", "UNCAUGHT EXCEPTION!");
+  console.error("\x1b[31m%s\x1b[0m", err);
+});
+
 const app = express();
 // Add headers before the routes are defined
 

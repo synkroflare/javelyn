@@ -2,6 +2,7 @@ import { PrismaClient } from "@prisma/client";
 import { Request, Response } from "express";
 import fs from "fs";
 import { rimraf } from "rimraf";
+import { Socket } from "socket.io";
 import { container, inject, injectable } from "tsyringe";
 import { Client } from "whatsapp-web.js";
 import { JavelynResponse } from "../leads/CreateLeadController";
@@ -89,20 +90,15 @@ export class ShutdownConnectionsUseCase {
       );
     }
 
+    const socket = container.resolve<Socket>("SocketServer");
+    socket.to(`ws-room-${company.id}`).emit("client-disconnected");
+
     await this.client.company.update({
       where: {
         id: company.id,
       },
       data: {
         whatsappFreeSlots: company.whatsappSlots,
-        users: {
-          updateMany: {
-            where: {},
-            data: {
-              zapStatus: "disconnected",
-            },
-          },
-        },
       },
     });
 

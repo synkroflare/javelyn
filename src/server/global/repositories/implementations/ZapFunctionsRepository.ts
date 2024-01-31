@@ -1,4 +1,5 @@
 import { PrismaClient } from "@prisma/client";
+import { Server } from "socket.io";
 import { container, inject, injectable } from "tsyringe";
 import { Client, LocalAuth, MessageMedia } from "whatsapp-web.js";
 import { IZapRepository, THandleConnectionData } from "../IZapRepository";
@@ -155,10 +156,9 @@ export class ZapFunctionsRepository implements IZapRepository {
   async handleConnection(
     data: THandleConnectionData
   ): Promise<{ isConnected: boolean; qrCode: string; message?: string }> {
-    const user = await this.prismaClient.user.findFirst({
+    const user = await this.prismaClient.user.findUnique({
       where: {
         id: data.userId,
-        companyId: data.companyId,
       },
       include: {
         company: {
@@ -204,23 +204,29 @@ export class ZapFunctionsRepository implements IZapRepository {
       client.initialize();
       console.log(`client initialized for user:  #${user.id} ${user.name}`);
 
-      client.on("loading_screen", async (percent, message) => {
-        await this.prismaClient.user.update({
-          where: {
-            id: user.id,
-          },
-          data: {
-            zapStatus: "loading",
-          },
-        });
+      const io = container.resolve<Server>("SocketServer");
+
+      io.to(`ws-room-${user.companyId}`).emit("client-initialized", {
+        id: user.id,
+      });
+
+      client.on("loading_screen", (percent, message) => {
         console.log(
           "zapClient-" + user.id + " LOADING SCREEN",
           percent,
           message
         );
+        io.to(`ws-room-${user.companyId}`).emit("client-loading_screen", {
+          id: user.id,
+          percent,
+          message,
+        });
       });
       client.on("authenticated", () => {
         console.log("zapClient-" + user.id + " AUTHENTICATED");
+        io.to(`ws-room-${user.companyId}`).emit("client-authenticated", {
+          id: user.id,
+        });
       });
       client.on("auth_failure", (msg) => {
         console.error("zapClient-" + user.id + " AUTHENTICATION FAILURE", msg);
@@ -245,10 +251,17 @@ export class ZapFunctionsRepository implements IZapRepository {
             },
           },
         });
+        io.to(`ws-solo-room-${user.id}`).emit("client-ready");
       });
 
       client.on("disconnected", async () => {
+        container.registerInstance<string>(
+          "zapClient-" + user.id,
+          "disconnected"
+        );
         console.log("zapClient-" + user.id + " disconnected.");
+
+        io.to(`ws-solo-room-${user.id}`).emit("client-disconnected");
 
         await this.prismaClient.company.update({
           where: {
@@ -263,10 +276,15 @@ export class ZapFunctionsRepository implements IZapRepository {
       });
 
       console.log(`getting qrcode for user:  #${user.id} ${user.name}`);
+      io.to(`ws-solo-room-${user.id}`).emit("client-waiting-qr");
 
       const qrCode: string = await new Promise((resolve, reject) => {
         client.on("qr", async (qr) => {
           console.log("zapClient-" + user.id + " qr on nmeth");
+          io.to(`ws-solo-room-${user.id}`).emit("client-qr-acquired", {
+            id: user.id,
+            qr,
+          });
           await this.prismaClient.user.update({
             where: {
               id: data.userId,
@@ -278,8 +296,6 @@ export class ZapFunctionsRepository implements IZapRepository {
           resolve(qr);
         });
       });
-
-      console.log(`qrcode acquired for user:  #${user.id} ${user.name}`);
 
       return {
         isConnected: false,
