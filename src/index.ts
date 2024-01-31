@@ -9,6 +9,11 @@ import { startContainers } from "./infra/container";
 import { logHandler } from "./infra/logs/logHandler";
 import { router } from "./infra/routes";
 
+process.on("uncaughtException", (err) => {
+  console.error("\x1b[31m%s\x1b[0m", "UNCAUGHT EXCEPTION!");
+  console.error("\x1b[31m%s\x1b[0m", err);
+});
+
 const app = express();
 
 const allowedOrigins = ["http://localhost:3000", "https://javelyn.vercel.app"]; // Substitua pelos seus valores
