@@ -208,6 +208,7 @@ export class ZapFunctionsRepository implements IZapRepository {
 
       io.to(`ws-room-${user.companyId}`).emit("client-initialized", {
         id: user.id,
+        info: client.info,
       });
 
       client.on("loading_screen", (percent, message) => {
@@ -251,7 +252,10 @@ export class ZapFunctionsRepository implements IZapRepository {
             },
           },
         });
-        io.to(`ws-solo-room-${user.id}`).emit("client-ready");
+        io.to(`ws-solo-room-${user.id}`).emit("client-ready", {
+          name: client?.info.pushname,
+          phone: client?.info.me.user,
+        });
       });
 
       client.on("disconnected", async () => {

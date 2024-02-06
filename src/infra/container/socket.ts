@@ -41,19 +41,22 @@ export const handleSocketContainer = (server: any) => {
     if (!client || client === "disconnected" || state === "disconnected") {
       io.to(`ws-solo-room-${userId}`).emit("client-disconnected");
     }
-    if (state === "CONNECTED") {
-      io.to(`ws-solo-room-${userId}`).emit("client-ready");
+    if (state === "CONNECTED" && typeof client !== "string") {
+      io.to(`ws-solo-room-${userId}`).emit("client-ready", {
+        name: client?.info.pushname,
+        phone: client?.info.me.user,
+      });
     }
 
     if (!state) {
       io.to(`ws-solo-room-${userId}`).emit("client-loading_screen");
     }
 
-    console.log("ws-connected", socket.id);
+    console.log("ws-connected", userId);
 
     socket.on("disconnectme", async () => {
       socket.disconnect();
-      console.log("ws-disconnect", socket.id);
+      console.log("ws-disconnect", userId);
     });
   });
 
