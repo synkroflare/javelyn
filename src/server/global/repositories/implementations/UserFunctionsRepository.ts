@@ -1,13 +1,12 @@
-import { PrismaClient } from "@prisma/client"
-import { inject, injectable } from "tsyringe"
-import { IUser } from "../../models/IUser"
+import { PrismaClient, User } from "@prisma/client";
+import { inject, injectable } from "tsyringe";
 import {
   IUserRepository,
   TCreateUserData,
   TFindUserByNameData,
   TFindUserData,
   TUpdateUserData,
-} from "../IUserRepository"
+} from "../IUserRepository";
 
 @injectable()
 export class UserFunctionsRepository implements IUserRepository {
@@ -15,15 +14,15 @@ export class UserFunctionsRepository implements IUserRepository {
     @inject("PrismaClient")
     private readonly client: PrismaClient
   ) {}
-  async update(data: TUpdateUserData): Promise<void | IUser> {
+  async update(data: TUpdateUserData): Promise<void | User> {
     const users = await this.client.user.update({
       where: {
         id: data.id,
       },
       data,
-    })
+    });
 
-    return users
+    return users;
   }
   async updateMany(data: TUpdateUserData): Promise<number | void> {
     const users = await this.client.user.updateMany({
@@ -31,12 +30,12 @@ export class UserFunctionsRepository implements IUserRepository {
         id: data.id,
       },
       data,
-    })
+    });
 
-    return users.count
+    return users.count;
   }
 
-  async delete(data: TFindUserData): Promise<void | IUser> {
+  async delete(data: TFindUserData): Promise<void | User> {
     const user = await this.client.user.update({
       where: {
         id: data.id,
@@ -44,46 +43,44 @@ export class UserFunctionsRepository implements IUserRepository {
       data: {
         statusTrashed: true,
       },
-    })
+    });
 
-    return user
+    return user;
   }
 
-  async create(data: TCreateUserData): Promise<IUser | void> {
-    const user = await this.client.user.create({ data })
-    return user
+  async create(data: TCreateUserData): Promise<User | void> {
+    const user = await this.client.user.create({ data });
+    return user;
   }
 
-  async find(data: TFindUserData): Promise<IUser[] | void> {
+  async find(data: TFindUserData): Promise<User[] | void> {
     const user = await this.client.user.findMany({
       where: data,
       include: {
-        createdTickets: true,
-        assignedTickets: true,
-        company: true,
+        role: true,
       },
-    })
+    });
 
-    if (!user) return []
+    if (!user) return [];
 
-    return user
+    return user;
   }
 
-  async findByName(data: TFindUserByNameData): Promise<IUser[] | void> {
+  async findByName(data: TFindUserByNameData): Promise<User[] | void> {
     const users = await this.client.user.findMany({
       where: {
         statusTrashed: false,
       },
-    })
+    });
 
-    const filteredUsers: IUser[] = []
+    const filteredUsers: User[] = [];
 
     for (let i = 0; i < users.length; i++) {
       if (users[i].name.includes(data.name)) {
-        filteredUsers.push(users[i])
+        filteredUsers.push(users[i]);
       }
     }
 
-    return filteredUsers
+    return filteredUsers;
   }
 }

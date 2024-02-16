@@ -21,6 +21,7 @@ model Company {
   whatsappSlots        Int     @default(1)
   whatsappFreeSlots    Int     @default(1)
   activeClientTreshold Int     @default(100)
+  salesGoal            Int     @default(0)
 
   statusTrashed Boolean @default(false)
 
@@ -35,7 +36,7 @@ model Company {
   tasks       Task[]
   quotes      Quote[]
   evaluations Evaluation[]
-  shops       Shop[]
+  roles       Role[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now())
@@ -250,6 +251,7 @@ model Procedure {
 
 model User {
   id         Int    @id @default(autoincrement())
+  roleId     Int?
   username   String @unique
   password   String
   name       String
@@ -273,8 +275,7 @@ model User {
   createdLead        Lead[]       @relation(name: "creator")
   assignedLeads      Lead[]       @relation(name: "assignee")
   createdEvaluations Evaluation[]
-  missions           Mission[]
-  pets               Pet[]
+  role               Role?        @relation(fields: [roleId], references: [id])
 
   statusTrashed Boolean  @default(false)
   createdAt     DateTime @default(now())
@@ -460,94 +461,25 @@ model Evaluation {
   updatedAt          DateTime  @default(now())
 }
 
-model Pet {
+model Role {
   id        Int    @id @default(autoincrement())
   companyId Int
-  ownerId   Int?
   name      String
-  sprite    String
-  type      String
-  level     Int
-  hunger    Int
-  thirst    Int
-  happiness Int
-  exercise  Int
 
-  items Item[]
-  owner User?  @relation(fields: [ownerId], references: [id])
+  canEditTickets     Boolean
+  canSeeAllTickets   Boolean
+  canEditLeads       Boolean
+  canSeeAllLeads     Boolean
+  canEditClients     Boolean
+  canSeeAllClients   Boolean
+  canSeeDashboard    Boolean
+  canSeeRescuePanel  Boolean
+  canSeeUsersPanel   Boolean
+  canSeeAllTasks     Boolean
+  canSeeContactPanel Boolean
 
-  statusTrashed Boolean  @default(false)
-  createdAt     DateTime @default(now())
-}
-
-model BaseItem {
-  id             Int     @id @default(autoincrement())
-  name           String  @unique
-  sprite         String
-  type           String
-  level          Int
-  value          Int
-  duration       Int?
-  effectType     String
-  effectModifier Float?
-  effectSprite   String?
-
-  items Item[]
-
-  statusTrashed Boolean  @default(false)
-  createdAt     DateTime @default(now())
-}
-
-model Item {
-  id           Int    @id @default(autoincrement())
-  holderId     Int?
-  shopId       Int?
-  baseItemName String
-
-  baseItem BaseItem @relation(fields: [baseItemName], references: [name])
-  holder   Pet?     @relation(fields: [holderId], references: [id])
-  shop     Shop?    @relation(fields: [shopId], references: [id])
-
-  statusTrashed Boolean   @default(false)
-  createdAt     DateTime  @default(now())
-  usedAt        DateTime?
-}
-
-model Mission {
-  id                  Int    @id @default(autoincrement())
-  userId              Int
-  baseMissionName     String
-  remainingObjectives Int
-
-  user        User        @relation(fields: [userId], references: [id])
-  baseMission BaseMission @relation(fields: [baseMissionName], references: [name])
-
-  statusTrashed Boolean   @default(false)
-  createdAt     DateTime  @default(now())
-  doneAt        DateTime?
-}
-
-model BaseMission {
-  id              Int    @id @default(autoincrement())
-  name            String @unique
-  title           String
-  briefing        String
-  baseLevel       Int
-  baseReward      Int
-  totalObjectives Int
-
-  missions Mission[]
-
-  statusTrashed Boolean  @default(false)
-  createdAt     DateTime @default(now())
-}
-
-model Shop {
-  id        Int @id @default(autoincrement())
-  companyId Int
-
-  company Company @relation(fields: [companyId], references: [id])
-  items   Item[]
+  users   User[]
+  company Company? @relation(fields: [companyId], references: [id])
 
   statusTrashed Boolean  @default(false)
   createdAt     DateTime @default(now())
